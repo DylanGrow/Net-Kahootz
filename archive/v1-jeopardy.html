@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SheetShowdown — Jeopardy-style Game</title>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b1220;
+  --panel:#121c2f;
+  --panel-2:#0f172a;
+  --accent:#3b82f6;
+  --accent-2:#60a5fa;
+  --gold:#fbbf24;
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+  --ok:#22c55e;
+  --warn:#f59e0b;
+  --danger:#ef4444;
+  --ring:rgba(59,130,246,.4);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background: radial-gradient(1200px 800px at 80% -10%, #1e3a8a 0%, transparent 50%), 
+              radial-gradient(800px 600px at -10% 20%, #0e7490 0%, transparent 40%),
+              var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  display:flex;
+  flex-direction:column;
+}
+a{color:var(--accent-2)}
+.hidden{display:none !important}
+.ghost{background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--text)}
+.primary{background:var(--accent);border:none;color:white}
+.secondary{background:#1f2a44;border:none;color:white}
+button{
+  font:inherit;font-weight:600;padding:.8rem 1.1rem;border-radius:.9rem;cursor:pointer;
+  transition:.2s transform,.2s filter,.2s background,.2s opacity;white-space:nowrap
+}
+button:hover{transform:translateY(-1px);filter:brightness(1.05)}
+button:active{transform:translateY(0)}
+button.small{padding:.5rem .8rem;font-size:.9rem;border-radius:.7rem}
+.card{
+  background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:1.2rem;
+  box-shadow:0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.05);
+  backdrop-filter: blur(12px);
+}
+.view{display:none;opacity:0;transform:translateY(8px);transition:.3s ease;flex:1}
+.view.active{display:block;opacity:1;transform:none}
+
+/* Landing */
+#view-landing{display:flex;align-items:center;justify-content:center;padding:24px;min-height:100vh}
+.landing-wrap{width:100%;max-width:980px;display:grid;grid-template-columns:1.1fr .9fr;gap:32px;align-items:center}
+@media(max-width:900px){.landing-wrap{grid-template-columns:1fr;gap:24px}}
+.brand-hero{padding:24px}
+.logo{
+  display:flex;align-items:center;gap:14px;margin-bottom:18px
+}
+.logo-badge{
+  width:48px;height:48px;border-radius:14px;
+  background:linear-gradient(160deg,var(--accent),#7c3aed);
+  display:grid;place-items:center;box-shadow:0 8px 30px rgba(59,130,246,.4)
+}
+.logo-badge svg{width:28px;height:28px;fill:white}
+h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.05;margin:.2rem 0;font-weight:800;letter-spacing:-.02em}
+.tag{color:var(--muted);font-size:1.05rem;max-width:42ch}
+.features{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+.feat{display:flex;gap:10px;align-items:flex-start;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);padding:12px;border-radius:.9rem}
+.feat svg{flex:0 0 20px;margin-top:2px;opacity:.9}
+.landing-card{padding:24px}
+.landing-card h2{margin:0 0 6px;font-size:1.3rem}
+.landing-card p{margin:0 0 18px;color:var(--muted)}
+.field{display:flex;flex-direction:column;gap:8px;margin:14px 0}
+.field label{font-size:.9rem;color:var(--muted);font-weight:500}
+.field input{
+  background:#0a1120;border:1px solid rgba(255,255,255,.12);color:white;
+  padding:.9rem 1rem;border-radius:.8rem;outline:none;font-size:1rem;
+  transition:.2s border,.2s box-shadow;
+}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--ring)}
+.role-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#0a1120;padding:6px;border-radius:.8rem;border:1px solid rgba(255,255,255,.1)}
+.role-btn{padding:.75rem;border-radius:.6rem;background:transparent;border:none;color:var(--muted);font-weight:600}
+.role-btn.active{background:#1e293b;color:white;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.join-row{display:flex;gap:10px;margin-top:18px}
+.join-row .primary{flex:1}
+.error-banner{margin-top:12px;padding:10px 12px;border-radius:.7rem;background:rgba(239,68,.15);border:1px solid rgba(239,68,68,.4);color:#fecaca;font-size:.9rem}
+
+/* Topbar */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 18px;background:rgba(11,18,32,.7);backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(255,255,255,.08)
+}
+.brand-mini{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px}
+.brand-mini .dot{width:28px;height:28px;border-radius:8px;background:linear-gradient(160deg,var(--accent),#7c3aed);display:grid;place-items:center}
+.top-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:.4rem .7rem;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);font-size:.85rem;color:var(--muted)}
+.pill .dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.pill.live .dot{background:var(--ok);box-shadow:0 0 10px var(--ok)}
+.pill.off .dot{background:var(--danger)}
+
+/* Host */
+.host-container{max-width:1400px;margin:22px auto;padding:0 16px;display:grid;grid-template-columns:340px 1fr;gap:18px}
+@media(max-width:1100px){.host-container{grid-template-columns:1fr}}
+.control{padding:18px;align-self:start;position:sticky;top:76px}
+.control h2{margin:0 0 4px}
+.control .sub{color:var(--muted);font-size:.9rem;margin-bottom:14px}
+.selected-box{background:#0a1120;border:1px dashed rgba(255,255,255,.15);border-radius:.8rem;padding:12px;margin:10px 0 14px}
+.selected-label{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.selected-value{font-size:1.15rem;font-weight:700;margin-top:4px;min-height:1.5em}
+.btn-group{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn-group .full{grid-column:1/-1}
+.instr{margin-top:14px;padding:12px;background:#08101f;border:1px solid rgba(59,130,246,.3);border-radius:.8rem}
+.instr h4{margin:.1rem 0 .4rem;font-size:.95rem;color:var(--accent-2)}
+.instr ol{margin:.4rem 0 .6rem 1.1rem;color:var(--text);font-size:.92rem}
+.instr code{background:rgba(255,255,255,.08);padding:.15rem .4rem;border-radius:.4rem;border:1px solid rgba(255,255,255,.1)}
+.copy-line{display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(255,255,255,.04);padding:8px 10px;border-radius:.6rem;margin:6px 0;border:1px solid rgba(255,255,255,.08)}
+.copy-line b{color:var(--gold)}
+.state-preview{margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);font-size:.9rem;color:var(--muted);display:grid;gap:6px}
+.state-preview b{color:var(--text)}
+.board-wrap{padding:16px;overflow:hidden}
+.board{
+  display:grid;gap:12px;--cols:5;
+  grid-template-columns:repeat(var(--cols),minmax(0,1fr));
+}
+@media(max-width:900px){
+  .board-wrap{overflow-x:auto}
+  .board{grid-auto-flow:column;grid-auto-columns:minmax(150px,1fr);grid-template-columns:unset}
+}
+.col{display:grid;gap:10px}
+.cat{
+  background:linear-gradient(180deg,#0f172a,#0b1220);
+  border:1px solid rgba(255,255,255,.1);border-bottom:3px solid rgba(255,255,255,.15);
+  border-radius:.9rem;padding:14px 8px;text-align:center;font-weight:800;text-transform:uppercase;letter-spacing:.04em;
+  font-size:.95rem;min-height:68px;display:grid;place-items:center;text-shadow:0 1px 0 rgba(0,0,0,.5)
+}
+.tile{
+  position:relative;aspect-ratio:3/2;min-height:90px;border-radius:.9rem;border:none;cursor:pointer;
+  background:linear-gradient(180deg,#1e3a8a,#1e40af);
+  color:var(--gold);font-weight:800;font-size:clamp(1.4rem,3vw,2rem);
+  box-shadow:inset 0 -4px 0 rgba(0,0,0,.35),0 6px 18px rgba(0,0,0,.35);
+  transition:.15s transform,.15s filter;
+  border:1px solid rgba(255,255,255,.12);
+}
+.tile:hover{transform:translateY(-2px) scale(1.02);filter:brightness(1.08)}
+.tile.selected{outline:3px solid var(--accent);outline-offset:2px}
+.tile.live{box-shadow:0 0 0 3px var(--gold), inset 0 -4px 0 rgba(0,0,0,.35);animation:pulseGold 1.5s infinite}
+.tile.used{opacity:.25;filter:grayscale(.7);transform:scale(.96);pointer-events:none}
+@keyframes pulseGold{0%,100%{box-shadow:0 0 0 3px var(--gold), inset 0 -4px 0 rgba(0,0,0,.35)}50%{box-shadow:0 0 0 6px rgba(251,191,36,.5), inset 0 -4px 0 rgba(0,0,0,.35)}}
+
+/* Player */
+.player-main{max-width:1000px;margin:24px auto;padding:0 16px;width:100%;display:grid;place-items:center;min-height:calc(100vh - 180px)}
+.waiting{text-align:center;padding:48px 28px;max-width:680px;width:100%}
+.pulse-dots{display:flex;gap:8px;justify-content:center;margin-bottom:16px}
+.pulse-dots span{width:10px;height:10px;border-radius:50%;background:var(--accent);animation:bdot 1.2s infinite}
+.pulse-dots span:nth-child(2){animation-delay:.2s}.pulse-dots span:nth-child(3){animation-delay:.4s}
+@keyframes bdot{0%,100%{transform:scale(.8);opacity:.5}50%{transform:scale(1.2);opacity:1}}
+.question-view{width:100%;max-width:900px;display:grid;gap:18px}
+.q-card.large{padding:28px}
+.q-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-size:.9rem}
+.q-meta .gold{color:var(--gold);font-size:1.1rem}
+.q-card h1{margin:0;font-size:clamp(1.6rem,4vw,2.6rem);line-height:1.2;font-weight:800;letter-spacing:-.01em}
+.a-card{padding:22px;border:2px solid rgba(34,197,94,.4);background:linear-gradient(180deg,rgba(34,197,94,.15),rgba(34,197,94,.05))}
+.a-card .label{font-size:.8rem;font-weight:800;letter-spacing:.1em;color:#86efac;margin-bottom:6px}
+.a-card h2{margin:0;font-size:clamp(1.4rem,3.5vw,2.2rem);color:#dcfce7}
+.buzzer{
+  margin:10px auto 0;width:min(220px,70vw);aspect-ratio:1/1;border-radius:50%;
+  background:radial-gradient(circle at 30% 25%,#fb7185,#e11d48 60%,#881337);
+  border:none;color:white;font-weight:900;font-size:2rem;letter-spacing:.06em;
+  box-shadow:0 20px 40px rgba(225,29,72,.4), inset 0 -10px 20px rgba(0,0,0,.3), inset 0 4px 10px rgba(255,255,255,.2);
+  transition:.1s transform,.2s filter;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent
+}
+.buzzer span{display:block;transform:translateY(-4px);text-shadow:0 2px 0 rgba(0,0,0,.3)}
+.buzzer:hover{filter:brightness(1.05)}
+.buzzer:active{transform:scale(.97)}
+.buzzer.buzzed{background:radial-gradient(circle at 30% 25%,#fde047,#f59e0b 60%,#92400e);box-shadow:0 0 40px rgba(251,191,36,.7), inset 0 -10px 20px rgba(0,0,0,.3);animation:buzzFlash .4s}
+@keyframes buzzFlash{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+.buzzed-text{ text-align:center;font-weight:800;color:var(--gold);margin-top:6px;min-height:1.5em;}
+
+/* Modal */
+.modal{position:fixed;inset:0;background:rgba(3,7,18,.7);backdrop-filter:blur(8px);display:grid;place-items:center;z-index:100;padding:20px}
+.modal-content{max-width:780px;width:100%;padding:26px;max-height:90vh;overflow:auto}
+.modal-content h2{margin-top:0}
+.steps{line-height:1.6}
+.steps li{margin:.6rem 0}
+pre{background:#0a1120;padding:12px;border-radius:.7rem;overflow:auto;border:1px solid rgba(255,255,255,.1);font-size:.85rem}
+
+/* Footer */
+footer{margin-top:auto;padding:18px;text-align:center;color:var(--muted);font-size:.85rem;border-top:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.2)}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- LANDING -->
+  <section id="view-landing" class="view active">
+    <div class="landing-wrap">
+      <div class="brand-hero">
+        <div class="logo">
+          <div class="logo-badge">
+            <svg viewBox="0 0 24 24"><path d="M12 2L15.5 8.5H22L16.75 12.5L18.5 19L12 15L5.5 19L7.25 12.5L2 8.5H8.5L12 2Z"/></svg>
+          </div>
+          <div>
+            <div style="font-weight:800;letter-spacing:.02em">SheetShowdown</div>
+            <div style="color:var(--muted);font-size:.9rem">Powered by Google Sheets</div>
+          </div>
+        </div>
+        <h1>Jeopardy-style games, no server needed.</h1>
+        <p class="tag">Host from your sheet. Players join instantly. Perfect for classrooms, trivia nights, and team building.</p>
+        <div class="features">
+          <div class="feat"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20v-6M6 20V10M18 20V4"/></svg><div><b>Live sync</b><div style="color:var(--muted);font-size:.9rem">Polls your Sheet every 2s</div></div></div>
+          <div class="feat"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h10"/></svg><div><b>Any device</b><div style="color:var(--muted);font-size:.9rem">Works on GitHub Pages</div></div></div>
+          <div class="feat"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/></svg><div><b>Zero backend</b><div style="color:var(--muted);font-size:.9rem">Just a published Sheet</div></div></div>
+          <div class="feat"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10z"/></svg><div><b>Host controls</b><div style="color:var(--muted);font-size:.9rem">1-click copy to Sheet</div></div></div>
+        </div>
+      <div class="card landing-card">
+        <h2>Join a game</h2>
+        <p>Enter your name, pick a role, and paste your Sheet ID.</p>
+        <div class="field">
+          <label>Display name</label>
+          <input id="playerName" placeholder="e.g., Alex" autocomplete="name" maxlength="24">
+        </div>
+        <div class="field">
+          <label>Role</label>
+          <div class="role-toggle" id="roleToggle">
+            <button class="role-btn active" data-role="host">Host</button>
+            <button class="role-btn" data-role="player">Player</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Google Sheet ID</label>
+          <input id="sheetId" placeholder="1AbC...xyz">
+        </div>
+        <div class="join-row">
+          <button id="joinBtn" class="primary">Join Game</button>
+          <button id="howBtn" class="ghost">How to Setup</button>
+        </div>
+        <div id="landingError" class="error-banner hidden"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOST -->
+  <section id="view-host" class="view">
+    <header class="topbar">
+      <div class="brand-mini"><div class="dot"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2L15.5 8.5H22L16.75 12.5L18.5 19L12 15L5.5 19L7.25 12.5L2 8.5H8.5L12 2Z"/></svg></div> SheetShowdown</div>
+      <div class="top-meta">
+        <span id="hostConn" class="pill"><span class="dot"></span><span id="hostConnText">Connecting...</span></span>
+        <span class="pill">Host: <b id="hostNameLabel" style="margin-left:4px;color:var(--text)"></b></span>
+        <button id="hostLeave" class="ghost small">Leave</button>
+      </div>
+    </header>
+    <div class="host-container">
+      <aside class="control card">
+        <h2>Host Panel</h2>
+        <div class="sub">Click a value, then copy to your Sheet.</div>
+        <div class="selected-box">
+          <div class="selected-label">Selected</div>
+          <div class="selected-value" id="hostSelected">None</div>
+        </div>
+        <div class="btn-group">
+          <button id="btnQ" class="primary">Show Question</button>
+          <button id="btnA" class="secondary">Show Answer</button>
+          <button id="btnClear" class="ghost full">Clear Board</button>
+        </div>
+        <div id="hostInstr" class="instr hidden"></div>
+        <div class="state-preview">
+          <div>Live Status: <b id="liveStatus">idle</b></div>
+          <div>Live Current: <b id="liveCurrent">—</b></div>
+          <div>Questions: <b id="qCount">0</b></div>
+        </div>
+      </aside>
+      <div class="board-wrap card">
+        <div id="board" class="board"></div>
+        <div id="boardEmpty" class="hidden" style="text-align:center;padding:40px;color:var(--muted)">No questions loaded. Check your Sheet.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLAYER -->
+  <section id="view-player" class="view">
+    <header class="topbar">
+      <div class="brand-mini"><div class="dot"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2L15.5 8.5H22L16.75 12.5L18.5 19L12 15L5.5 19L7.25 12.5L2 8.5H8.5L12 2Z"/></svg></div> SheetShowdown</div>
+      <div class="top-meta">
+        <span id="playerConn" class="pill"><span class="dot"></span><span id="playerConnText">Connecting...</span></span>
+        <span class="pill">You: <b id="playerNameLabel" style="margin-left:4px;color:var(--text)"></b></span>
+        <button id="playerLeave" class="ghost small">Leave</button>
+      </div>
+    </header>
+    <main class="player-main">
+      <div id="playerWaiting" class="waiting card">
+        <div class="pulse-dots"><span></span><span></span><span></span></div>
+        <h2 style="margin:0 0 8px">Waiting for host...</h2>
+        <p style="color:var(--muted);margin:0">The question will appear here when the host starts.</p>
+      </div>
+      <div id="playerQuestion" class="question-view hidden">
+        <div class="q-card card large">
+          <div class="q-meta"><span id="pqCat">Category</span><span id="pqVal" class="gold">$200</span></div>
+          <h1 id="pqText">Question text goes here</h1>
+        </div>
+        <div id="pqAnswer" class="a-card card hidden">
+          <div class="label">ANSWER</div>
+          <h2 id="paText">Answer here</h2>
+        </div>
+        <button id="buzzer" class="buzzer" aria-label="Buzz in"><span>BUZZ</span></button>
+        <div id="buzzText" class="buzzed-text"></div>
+      </div>
+    </main>
+  </section>
+</div>
+
+<!-- Setup Modal -->
+<div id="modal" class="modal hidden">
+  <div class="modal-content card">
+    <h2>How to Setup</h2>
+    <ol class="steps">
+      <li><b>Create a Google Sheet</b> with two tabs named exactly: <code>Questions</code> and <code>State</code>.</li>
+      <li><b>Questions sheet</b> — headers in row 1: <code>Category</code>, <code>Value</code>, <code>Question</code>, <code>Answer</code></li>
+      <li><b>State sheet</b> — headers: <code>key</code>, <code>value</code>. Add rows:
+        <pre>key,value
+current,
+status,idle
+lastUpdated,</pre>
+      </li>
+      <li><b>Share:</b> File → Share → Anyone with the link → Viewer</li>
+      <li><b>Publish:</b> File → Publish to web → Entire document → Web page → Publish</li>
+      <li><b>Copy Sheet ID</b> from URL: <code>https://docs.google.com/spreadsheets/d/&lt;THIS_PART&gt;/edit</code></li>
+      <li><b>Host controls:</b> As host, click a tile then click "Show Question". Copy the values into your <code>State</code> sheet:
+        <ul>
+          <li>Set <code>current</code> = <code>Category|Value</code> (e.g., <code>Science|200</code>)</li>
+          <li>Set <code>status</code> = <code>question</code> or <code>answer</code> or <code>idle</code></li>
+          <li>Optional: set <code>lastUpdated</code> to now</li>
+        </ul>
+      </li>
+    </ol>
+    <h3 style="margin-top:18px">Example Questions</h3>
+    <pre>Category,Value,Question,Answer
+Science,200,What planet is known as the Red Planet?,Mars
+Science,400,What is H2O commonly called?,Water
+History,200,Who was the first US president?,George Washington
+History,400,In what year did WWII end?,1945
+Pop Culture,200,What company makes the iPhone?,Apple
+Pop Culture,400,Who sings "Blinding Lights"?,The Weeknd</pre>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+      <button id="closeModal" class="primary">Got it</button>
+    </div>
+  </div>
+</div>
+
+<footer>Hosted on GitHub Pages • Controlled by Google Sheets</footer>
+
+<script>
+/*
+SHEETSHOWDOWN - Single file Jeopardy-style game
+Setup:
+1. Create Google Sheet with tabs "Questions" and "State"
+2. Questions columns: Category, Value, Question, Answer
+3. State columns: key, value  (rows: current, status, lastUpdated)
+4. File > Share > Anyone with link (Viewer)
+5. File > Publish to web > Entire Document > Publish
+6. Copy Sheet ID from URL into the game
+HOST FLOW: Click tile → Click "Show Question" → copy values into your State sheet → players see it live
+*/
+
+const SHEET_ID = 'REPLACE_WITH_YOUR_SHEET_ID'; // pre-fill if you want
+const POLL_INTERVAL = 2000;
+
+let App = {
+  config:{name:'',role:'host',sheetId:''},
+  questions:[],
+  categories:[],
+  gameState:{current:'',status:'idle',lastUpdated:''},
+  used:new Set(),
+  currentLocal:null,
+  pollTimer:null,
+  connected:false,
+};
+
+function $(id){return document.getElementById(id)}
+function show(el,yes){el.classList.toggle('hidden',!yes)}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  if(SHEET_ID && SHEET_ID!=='REPLACE_WITH_YOUR_SHEET_ID') $('sheetId').value=SHEET_ID;
+  
+  // role toggle
+  document.querySelectorAll('.role-btn').forEach(b=>{
+    b.onclick=()=>{
+      document.querySelectorAll('.role-btn').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      App.config.role=b.dataset.role;
+    }
+  });
+  $('joinBtn').onclick=joinGame;
+  $('howBtn').onclick=()=>$('modal').classList.remove('hidden');
+  $('closeModal').onclick=()=>$('modal').classList.add('hidden');
+  $('modal').onclick=e=>{if(e.target.id==='modal')$('modal').classList.add('hidden')}
+  
+  $('hostLeave').onclick=leaveGame;
+  $('playerLeave').onclick=leaveGame;
+  $('btnQ').onclick=()=>hostAction('question');
+  $('btnA').onclick=()=>hostAction('answer');
+  $('btnClear').onclick=()=>hostAction('clear');
+  $('buzzer').onclick=buzz;
+  
+  // load used
+  try{
+    const s=localStorage.getItem('ss-used');
+    if(s) App.used=new Set(JSON.parse(s));
+  }catch{}
+});
+
+function joinGame(){
+  const name=$('playerName').value.trim();
+  const sheetId=$('sheetId').value.trim();
+  const role=document.querySelector('.role-btn.active').dataset.role;
+  const err=$('landingError');
+  
+  if(!name){err.textContent='Please enter your name';show(err,true);return}
+  if(!sheetId){err.textContent='Please enter your Google Sheet ID';show(err,true);return}
+  show(err,false);
+  
+  App.config={name,role,sheetId};
+  $('view-landing').classList.remove('active');
+  $(`view-${role}`).classList.add('active');
+  if(role==='host'){
+    $('hostNameLabel').textContent=name;
+  }else{
+    $('playerNameLabel').textContent=name;
+  }
+  initGame();
+}
+
+function leaveGame(){
+  if(App.pollTimer) clearInterval(App.pollTimer);
+  location.reload();
+}
+
+async function initGame(){
+  await loadQuestions();
+  startPolling();
+  if(App.config.role==='host') buildBoard();
+  render();
+}
+
+async function loadQuestions(){
+  const url=`https://docs.google.com/spreadsheets/d/${App.config.sheetId}/gviz/tq?tqx=out:csv&sheet=Questions&t=${Date.now()}`;
+  try{
+    const res=await fetch(url,{cache:'no-store'});
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const csv=await res.text();
+    const parsed=Papa.parse(csv,{header:true,skipEmptyLines:true});
+    App.questions=parsed.data.map(r=>({
+      Category:(r.Category||'').trim(),
+      Value:String(r.Value||'').trim(),
+      Question:(r.Question||'').trim(),
+      Answer:(r.Answer||'').trim(),
+    })).filter(q=>q.Category && q.Value && q.Question);
+    
+    // group categories preserving order
+    const seen=new Set();
+    App.categories=[];
+    App.questions.forEach(q=>{
+      if(!seen.has(q.Category)){seen.add(q.Category);App.categories.push(q.Category)}
+    });
+    // sort values numeric within each
+    App.categories.forEach(cat=>{
+      const items=App.questions.filter(q=>q.Category===cat);
+      items.sort((a,b)=>Number(a.Value)-Number(b.Value));
+    });
+    $('qCount').textContent=App.questions.length;
+    show($('boardEmpty'),App.questions.length===0);
+  }catch(e){
+    console.error(e);
+    const msg="Couldn't load Questions. Make sure your Sheet is published to the web and the 'Questions' tab exists.";
+    $('landingError').textContent=msg; show($('landingError'),true);
+    $('qCount').textContent='0';
+    show($('boardEmpty'),true);
+  }
+}
+
+function buildBoard(){
+  const board=$('board');
+  board.innerHTML='';
+  board.style.setProperty('--cols', App.categories.length||5);
+  
+  App.categories.forEach(cat=>{
+    const col=document.createElement('div');
+    col.className='col';
+    const header=document.createElement('div');
+    header.className='cat';
+    header.textContent=cat;
+    col.appendChild(header);
+    
+    const items=App.questions.filter(q=>q.Category===cat).sort((a,b)=>Number(a.Value)-Number(b.Value));
+    items.forEach(q=>{
+      const btn=document.createElement('button');
+      btn.className='tile';
+      btn.type='button';
+      btn.dataset.key=`${q.Category}|${q.Value}`;
+      btn.innerHTML=`$${q.Value.replace('$','')}`;
+      btn.onclick=()=>hostSelect(q.Category,q.Value);
+      if(App.used.has(btn.dataset.key)) btn.classList.add('used');
+      col.appendChild(btn);
+    });
+    board.appendChild(col);
+  });
+}
+
+function hostSelect(cat,val){
+  App.currentLocal={cat,val};
+  $('hostSelected').textContent=`${cat} — $${val}`;
+  document.querySelectorAll('.tile').forEach(t=>t.classList.remove('selected'));
+  const key=`${cat}|${val}`;
+  const el=document.querySelector(`.tile[data-key="${CSS.escape(key)}"]`);
+  if(el) el.classList.add('selected');
+  show($('hostInstr'),false);
+}
+
+function hostAction(type){
+  const instr=$('hostInstr');
+  if(type==='clear'){
+    App.currentLocal=null;
+    $('hostSelected').textContent='None';
+    document.querySelectorAll('.tile').forEach(t=>t.classList.remove('selected'));
+    instr.innerHTML=`
+      <h4>Clear the board for players</h4>
+      <ol><li>Open your <b>State</b> sheet</li></ol>
+      <div class="copy-line"><span>key <code>current</code> = <b></b></span><button class="small ghost" onclick="copyToClipboard('',this)">Copy</button></div>
+      <div class="copy-line"><span>key <code>status</code> = <b>idle</b></span><button class="small ghost" onclick="copyToClipboard('idle',this)">Copy</button></div>
+      <div class="copy-line"><span>key <code>lastUpdated</code> = <b>now</b></span><button class="small ghost" onclick="copyToClipboard(new Date().toISOString(),this)">Copy time</button></div>
+    `;
+    show(instr,true); return;
+  }
+  if(!App.currentLocal){
+    instr.innerHTML=`<h4>Select a question first</h4><p style="color:var(--muted);margin:.4rem 0 0">Click any $${''} value on the board.</p>`;
+    show(instr,true); return;
+  }
+  const key=`${App.currentLocal.cat}|${App.currentLocal.val}`;
+  const status=type;
+  instr.innerHTML=`
+    <h4>Update Google Sheet → State</h4>
+    <ol>
+      <li>Set <code>current</code> to the value below</li>
+      <li>Set <code>status</code> to <code>${status}</code></li>
+      <li>Players will update in ~2 seconds</li>
+    </ol>
+    <div class="copy-line"><span><code>current</code> = <b>${key}</b></span><button class="small ghost" onclick="copyToClipboard('${key}',this)">Copy</button></div>
+    <div class="copy-line"><span><code>status</code> = <b>${status}</b></span><button class="small ghost" onclick="copyToClipboard('${status}',this)">Copy</button></div>
+    <div class="copy-line"><span><code>lastUpdated</code> = <b>now</b></span><button class="small ghost" onclick="copyToClipboard(new Date().toISOString(),this)">Copy time</button></div>
+  `;
+  show(instr,true);
+}
+
+window.copyToClipboard=(text,btn)=>{
+  navigator.clipboard.writeText(text).then(()=>{
+    const old=btn.textContent; btn.textContent='Copied!'; setTimeout(()=>btn.textContent=old,1200);
+  });
+};
+
+function startPolling(){
+  pollState();
+  App.pollTimer=setInterval(pollState,POLL_INTERVAL);
+}
+
+async function pollState(){
+  const url=`https://docs.google.com/spreadsheets/d/${App.config.sheetId}/gviz/tq?tqx=out:csv&sheet=State&rand=${Date.now()}`;
+  try{
+    const res=await fetch(url,{cache:'no-store'});
+    if(!res.ok) throw new Error('state fetch failed');
+    const csv=await res.text();
+    const data=Papa.parse(csv,{header:true,skipEmptyLines:true}).data;
+    const next={};
+    data.forEach(r=>{ if(r.key) next[r.key.trim()]= (r.value||'').trim() });
+    App.gameState={...App.gameState, ...next};
+    App.connected=true;
+    updateConn(true);
+    render();
+  }catch(e){
+    App.connected=false;
+    updateConn(false);
+  }
+}
+
+function updateConn(ok){
+  const hostPill=$('hostConn'); const playerPill=$('playerConn');
+  [hostPill,playerPill].forEach(p=>{
+    if(!p) return;
+    p.classList.toggle('live',ok);
+    p.classList.toggle('off',!ok);
+  });
+  $('hostConnText').textContent=ok?'Live':'Offline';
+  $('playerConnText').textContent=ok?'Live':'Offline';
+}
+
+function render(){
+  if(App.config.role==='host') renderHost(); else renderPlayer();
+}
+
+function renderHost(){
+  $('liveStatus').textContent=App.gameState.status||'idle';
+  $('liveCurrent').textContent=App.gameState.current||'—';
+  
+  // highlight live tile
+  document.querySelectorAll('.tile').forEach(t=>t.classList.remove('live'));
+  if(App.gameState.current){
+    const el=document.querySelector(`.tile[data-key="${CSS.escape(App.gameState.current)}"]`);
+    if(el) el.classList.add('live');
+    // mark used when answer shown
+    if(App.gameState.status==='answer'){
+      el?.classList.add('used');
+      App.used.add(App.gameState.current);
+      try{localStorage.setItem('ss-used',JSON.stringify([...App.used]))}catch{}
+    }
+  }
+}
+
+function getCurrentQuestion(){
+  if(!App.gameState.current) return null;
+  const [cat,val]=App.gameState.current.split('|');
+  return App.questions.find(q=>q.Category===cat && String(q.Value)===String(val)) || null;
+}
+
+function renderPlayer(){
+  const q=getCurrentQuestion();
+  const status=App.gameState.status||'idle';
+  const waiting=status==='idle' || !q;
+  
+  show($('playerWaiting'), waiting);
+  show($('playerQuestion'), !waiting);
+  
+  if(!waiting && q){
+    $('pqCat').textContent=q.Category;
+    $('pqVal').textContent=`$${q.Value}`;
+    $('pqText').textContent=q.Question;
+    $('paText').textContent=q.Answer;
+    show($('pqAnswer'), status==='answer');
+  }
+}
+
+let buzzLock=false;
+function buzz(){
+  if(buzzLock) return;
+  buzzLock=true;
+  const btn=$('buzzer');
+  btn.classList.add('buzzed');
+  $('buzzText').textContent='BUZZED!';
+  // beep
+  try{
+    const ac=new (window.AudioContext||window.webkitAudioContext)();
+    const o=ac.createOscillator(); const g=ac.createGain();
+    o.type='triangle'; o.frequency.value=880;
+    o.connect(g); g.connect(ac.destination);
+    g.gain.setValueAtTime(.001,ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(.28,ac.currentTime+.01);
+    g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.25);
+    o.start(); o.stop(ac.currentTime+.26);
+  }catch{}
+  setTimeout(()=>{
+    btn.classList.remove('buzzed');
+    $('buzzText').textContent='';
+    buzzLock=false;
+  },1400);
+}
+
+// expose for inline handlers
+window.hostSelect=hostSelect;
+</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Network+ Quiz — Ultra Fast</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0e14">
+<meta name="description" content="Ultra-fast CompTIA Network+ Kahoot-style quiz">
+<link rel="preconnect" href="https://docs.google.com">
+<link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Network%2B%20Quiz%22%2C%22short_name%22%3A%22Net%2B%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a0e14%22%2C%22theme_color%22%3A%22%230a0e14%22%7D">
+<style>:root{--b:#0a0e14;--c:#111827;--f:#e5e7eb;--m:#9ca3af;--a:#3b82f6;--g:#22c55e;--r:#ef4444}*{box-sizing:border-box}html,body{margin:0;background:var(--b);color:var(--f);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif}main{max-width:720px;margin:0 auto;padding:20px;contain:content}h1{font-size:22px;margin:0 0 12px;font-weight:700} .card{background:var(--c);border:1px solid #1f2937;border-radius:14px;padding:18px;contain:layout style paint}button{appearance:none;border:0;background:var(--a);color:#fff;padding:12px 16px;border-radius:10px;font-weight:600;cursor:pointer}button:disabled{opacity:.5}input{width:100%;background:#0b1220;color:var(--f);border:1px solid #243049;border-radius:10px;padding:12px 14px;font:inherit}label{display:block;margin:12px 0 6px;color:var(--m);font-size:13px}.row{display:flex;gap:12px;flex-wrap:wrap}.grid{display:grid;gap:10px}.muted{color:var(--m);font-size:13px}.pin{font-size:42px;font-weight:800;letter-spacing:6px;text-align:center;margin:8px 0;font-variant-numeric:tabular-nums}.opt{padding:14px;border:1px solid #243049;border-radius:12px;background:#0c1424;cursor:pointer;user-select:none}.opt[aria-selected=true]{outline:2px solid var(--a);background:#0e1a30}.skeleton{height:16px;background:linear-gradient(90deg,#0e1525 25%,#121c30 37%,#0e1525 63%);background-size:400% 100%;animation:s 1.2s ease-in-out infinite;border-radius:8px}@media(prefers-reduced-motion:reduce){.skeleton{animation:none}*{transition:none!important}}@keyframes s{0%{background-position:100% 50%}100%{background-position:0 50%}}footer{margin-top:24px;color:var(--m);font-size:12px;text-align:center}</style>
+<style media="print" onload="this.media='all'">.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#0b1220;border:1px solid #243049;font-size:12px;color:var(--m)}.list{display:grid;gap:8px;margin:10px 0;content-visibility:auto;contain-intrinsic-size:300px}.item{display:flex;justify-content:space-between;padding:10px 12px;background:#0b1220;border:1px solid #1f2937;border-radius:10px}.opt.correct{outline:2px solid var(--g);background:#0e2318}.opt.wrong{outline:2px solid var(--r);background:#231214}.kbd{font-family:ui-monospace,monospace;background:#0b1220;border:1px solid #243049;padding:2px 6px;border-radius:6px;font-size:12px}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px;border-bottom:1px solid #1f2937;font-size:14px}</style>
+</head>
+<body>
+<main id="app" aria-live="polite"><div class="card"><div class="skeleton" style="height:28px;width:60%"></div><div class="skeleton" style="margin-top:12px"></div><div class="skeleton" style="margin-top:8px;width:80%"></div></div></main>
+<script type="module" async>
+console.time('boot');const $=s=>document.querySelector(s);const app=$('#app');let state={mode:'home'};let pollTimer=null,pollRate=3000,lastState='';const idle=window.requestIdleCallback||(cb=>setTimeout(cb,1));
+
+function parseCSV(t){const r=[];let h; t.trim().split(/\r?\n/).forEach((l,i)=>{const c=[];let v='',q=0;for(const ch of l){if(ch=='"')q^=1;else if(ch==','&&!q){c.push(v);v=''}else v+=ch}c.push(v);if(!i)h=c;else{const o={};h.forEach((k,j)=>o[k]=c[j]);r.push(o)}});return r}
+console.time('parse');
+const CSV=`question,a,b,c,d,answer,explain
+What TCP port does HTTPS use?,80,443,22,3389,2,HTTPS uses TCP 443
+Which OSI layer handles IP routing?,Physical,Data Link,Network,Transport,3,IP is Layer 3 Network
+A /24 subnet provides how many usable hosts?,254,256,255,512,1,2^8 minus network and broadcast
+Which protocol is connectionless?,TCP,UDP,SCTP,HTTP,2,UDP has no handshake
+DNS queries primarily use?,UDP 53,TCP 53,UDP 67,TCP 80,1,Port 53 UDP for lookups
+ARP resolves?,IP to MAC,MAC to IP,Port to IP,Name to IP,1,Maps IP to MAC on LAN
+Which Wi-Fi is 5GHz only?,802.11b,802.11g,802.11n,802.11ac,4,802.11ac is 5GHz
+STP prevents?,Collisions,Broadcast storms,Loops,Duplicates,3,Spanning Tree blocks loops
+Private IPv4 range?,8.8.8.0/24,172.16.0.0/12,172.32.0.0/12,192.169.0.0/16,2,RFC1918 172.16-31
+Traceroute manipulates?,TTL,Window,Checksum,MTU,1,Increments TTL per hop
+UTP Ethernet max run?,500m,185m,100m,10m,3,Cat5e/6 limit ~100 meters
+OSPF is?,Distance vector,Path vector,Link state,Hybrid,3,OSPF is link-state
+DHCP order?,DORA,RADO,ODRA,AROD,1,Discover Offer Request Ack
+Secure remote CLI?,Telnet,SSH,RDP,FTP,2,SSH encrypts terminal
+Standard Ethernet MTU?,1500,9000,1492,1518,1,1500 byte payload`;
+const QS=parseCSV(CSV);console.timeEnd('parse');
+
+class API{cache=new Map();bc=new BroadcastChannel('nq');constructor(){this.SCRIPT=''}async call(a,d){const k=JSON.stringify([a,d]);if(this.cache.has(k))return this.cache.get(k);const r=this.SCRIPT?await this.remote(a,d):await this.local(a,d);this.cache.set(k,r);setTimeout(()=>this.cache.delete(k),800);return r}async remote(a,d){for(let i=0;i<3;i++){try{const c=new AbortController();const t=setTimeout(()=>c.abort(),4000);const res=await fetch(this.SCRIPT+'?x='+a,{method:'POST',body:JSON.stringify(d),signal:c.signal,keepalive:true});clearTimeout(t);if(!res.ok)throw 0;return await res.json()}catch(e){if(i===2)throw e;await new Promise(r=>setTimeout(r,250*(i+1)))}}}async local(a,d){const id='nq_'+d.pin;if(a==='create'){const g={pin:d.pin,host:d.name,qs:d.qs,players:[{name:d.name,score:0}],idx:-1,st:'lobby',answers:{},ts:Date.now()};localStorage.setItem(id,JSON.stringify(g));this.bc.postMessage({t:'u',pin:d.pin});return{ok:1}}if(a==='join'){const g=JSON.parse(localStorage.getItem(id)||'{}');if(!g.pin)throw Error('no');if(!g.players.find(p=>p.name===d.name))g.players.push({name:d.name,score:0});localStorage.setItem(id,JSON.stringify(g));this.bc.postMessage({t:'u',pin:d.pin});return{ok:1}}if(a==='state'){return{g:JSON.parse(localStorage.getItem(id)||'null')}}if(a==='answer'){const g=JSON.parse(localStorage.getItem(id));g.answers[d.name]=d.a;localStorage.setItem(id,JSON.stringify(g));this.bc.postMessage({t:'u',pin:d.pin});return{ok:1}}if(a==='next'){const g=JSON.parse(localStorage.getItem(id));if(g.idx<0){g.idx=0;g.st='q'}else if(g.st==='q'){g.st='res';const cor=+g.qs[g.idx].answer;g.players.forEach(p=>{if(g.answers[p.name]==cor)p.score=(p.score||0)+100});g.answers={}}else{g.idx++;g.st=g.idx>=g.qs.length?'end':'q'}localStorage.setItem(id,JSON.stringify(g));this.bc.postMessage({t:'u',pin:d.pin});return{ok:1}}}}
+const api=new API();api.bc.onmessage=e=>{if(state.pin===e.data.pin)pull()};
+
+const h=s=>app.innerHTML=s;
+function home(){state.mode='home';h(`<h1>CompTIA Network+ Quiz</h1><div class="card grid"><div class=row><button data-a=host>Host Game</button><button data-a=join style="background:#0b1220;border:1px solid #243049">Join Game</button></div><div class=muted>Blazing fast • works offline • Google Sheets ready</div></div><footer>Keys: <span class=kbd>1</span>-<span class=kbd>4</span> answer • <span class=kbd>Space</span> next</footer>`)}
+function viewHost(){h(`<div class=card><label>Your name</label><input id=n placeholder="Instructor" autocomplete="nickname"><div class="row" style="margin-top:12px"><button data-a=create>Create Lobby</button><button data-a=back style="background:#0b1220;border:1px solid #243049">Back</button></div></div>`);$('#n')?.focus()}
+function viewJoin(){h(`<div class=card><label>Game PIN</label><input id=p inputmode=numeric pattern="[0-9]*" maxlength=4 placeholder="1234"><label>Your name</label><input id=n placeholder="Alex" autocomplete="nickname"><div class="row" style="margin-top:12px"><button data-a=joinGo>Join</button><button data-a=back style="background:#0b1220;border:1px solid #243049">Back</button></div></div>`);$('#p')?.focus()}
+function lobby(g){const host=state.isHost;h(`<div class=card><div class="row" style="justify-content:space-between"><span class=badge>${g.st}</span><span class=muted>PIN ${g.pin}</span></div><div class=pin>${g.pin}</div><div class=list>${g.players.map(p=>`<div class=item><span>${p.name}${p.name===g.host?' • host':''}</span><span>${p.score||0}</span></div>`).join('')}</div>${host?`<div class=row><button data-a=start>${g.idx<0?'Start Quiz':'Next'}</button><button data-a=copy style="background:#0b1220;border:1px solid #243049">Copy PIN</button></div>`:`<div class=muted>Waiting for host…</div>`}</div>`)}
+function question(g){const q=g.qs[g.idx];const me=state.name;const my=g.answers?.[me];h(`<div class=card><div class="row" style="justify-content:space-between"><span class=badge>Q ${g.idx+1}/${g.qs.length}</span><span class=muted>${state.isHost?'Host':me}</span></div><h1 style="margin-top:10px">${q.question}</h1><div class=grid id=opts>${['a','b','c','d'].map((k,i)=>`<div class=opt role=button tabindex=0 data-o=${i+1} aria-selected=${my==i+1}> <strong>${i+1}.</strong> ${q[k]}</div>`).join('')}</div>${state.isHost?`<div class="row" style="margin-top:12px"><button data-a=next>Reveal</button></div>`:`<div class=muted>${my?'Locked in':'Pick 1-4'}</div>`}</div>`)}
+function results(g){const q=g.qs[g.idx];const cor=+q.answer;h(`<div class=card><div class=badge>Answer</div><h1>${q.question}</h1><div class=grid>${['a','b','c','d'].map((k,i)=>`<div class="opt ${i+1===cor?'correct':''}"><strong>${i+1}.</strong> ${q[k]} ${i+1===cor?'✓':''}</div>`).join('')}</div><div class=muted style="margin-top:8px">${q.explain||''}</div><table style="margin-top:12px"><thead><tr><th>Player</th><th>Score</th></tr></thead><tbody>${g.players.sort((a,b)=>(b.score||0)-(a.score||0)).map(p=>`<tr><td>${p.name}</td><td>${p.score||0}</td></tr>`).join('')}</tbody></table>${state.isHost?`<div class="row" style="margin-top:12px"><button data-a=next>${g.idx+1>=g.qs.length?'Finish':'Next Question'}</button></div>`:`<div class=muted>Waiting…</div>`}</div>`)}
+function end(g){h(`<div class=card><h1>Game Over</h1><table><thead><tr><th>#</th><th>Player</th><th>Score</th></tr></thead><tbody>${g.players.sort((a,b)=>(b.score||0)-(a.score||0)).map((p,i)=>`<tr><td>${i+1}</td><td>${p.name}</td><td>${p.score||0}</td></tr>`).join('')}</tbody></table><div class="row" style="margin-top:12px"><button data-a=back>Home</button></div></div>`)}
+
+async function pull(){if(!state.pin)return;try{console.time('state');const {g}=await api.call('state',{pin:state.pin});console.timeEnd('state');if(!g)return;const s=JSON.stringify(g);if(s===lastState)return;lastState=s;console.time('render');if(g.st==='lobby'||g.idx<0){lobby(g);setPoll(3000)}else if(g.st==='q'){question(g);setPoll(800)}else if(g.st==='res'){results(g);setPoll(2000)}else{end(g);setPoll(3000)}console.timeEnd('render')}catch(e){show('Reconnecting…')}}
+function setPoll(ms){if(pollRate===ms&&pollTimer)return;pollRate=ms;clearInterval(pollTimer);if(!document.hidden)pollTimer=setInterval(pull,ms)}
+function startPoll(){pull();setPoll(state.isHost?1200:3000)}
+
+function show(m){const d=document.createElement('div');d.textContent=m;d.style.cssText='position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#111827;border:1px solid #374151;padding:8px 12px;border-radius:8px;font-size:13px;z-index:9';document.body.appendChild(d);setTimeout(()=>d.remove(),1800)}
+
+app.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b){const a=b.dataset.a;if(a==='host'){state.isHost=true;viewHost()}else if(a==='join'){state.isHost=false;viewJoin()}else if(a==='back'){location.reload()}else if(a==='create'){const name=$('#n').value.trim()||'Host';const pin=String(Math.floor(1000+Math.random()*9000));state.pin=pin;state.name=name;console.time('create');api.call('create',{pin,name,qs:QS}).then(()=>{console.timeEnd('create');startPoll();lobby({pin,host:name,players:[{name,score:0}],idx:-1,st:'lobby'})})}else if(a==='joinGo'){const pin=$('#p').value.trim();const name=$('#n').value.trim()||'Player';if(pin.length!==4)return show('Enter 4-digit PIN');state.pin=pin;state.name=name;api.call('join',{pin,name}).then(startPoll).catch(()=>show('Game not found'))}else if(a==='start'||a==='next'){api.call('next',{pin:state.pin})}else if(a==='copy'){navigator.clipboard?.writeText(state.pin);show('PIN copied')}}const o=e.target.closest('.opt');if(o&&!state.isHost){select(+o.dataset.o)}},{passive:true})
+
+function select(v){if(!state.pin)return;document.querySelectorAll('.opt').forEach(el=>el.setAttribute('aria-selected',el.dataset.o==v));api.call('answer',{pin:state.pin,name:state.name,a:v})}
+
+window.addEventListener('keydown',e=>{if(e.target.matches('input'))return;const n=+e.key;if(n>=1&&n<=4){select(n)}if(e.code==='Space'&&state.isHost){e.preventDefault();api.call('next',{pin:state.pin})}})
+document.addEventListener('visibilitychange',()=>{if(document.hidden){clearInterval(pollTimer);pollTimer=null}else{startPoll()}},{passive:true})
+document.addEventListener('touchstart',()=>{},{passive:true})
+window.addEventListener('error',()=>show('Error — refresh'));window.addEventListener('unhandledrejection',()=>show('Network issue'))
+
+home();
+
+idle(()=>{if('serviceWorker' in navigator){const code=`const V='nq-v2';self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(['./'])));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==V).map(x=>caches.delete(x)))))});self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{try{caches.open(V).then(c=>c.put(e.request,res.clone()))}catch{}return res})).catch(()=>caches.match('./')))})}`;const b=new Blob([code],{type:'text/javascript'});navigator.serviceWorker.register(URL.createObjectURL(b)).catch(()=>{})}console.timeEnd('boot')});
+</script>
+</body>
+</html>

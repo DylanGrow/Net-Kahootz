@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Network+ Quiz — Study Tool</title>
+<style>
+:root{
+  --bg:#0f172a; --card:#1e293b; --card-2:#0f172a; --border:#334155;
+  --primary:#3b82f6; --success:#10b981; --danger:#ef4444;
+  --text:#e2e8f0; --muted:#94a3b8;
+  --red:#ef4444; --blue:#3b82f6; --yellow:#eab308; --green:#10b981;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{line-height:1.3;margin:0 0 .5rem;font-weight:600}
+p{margin:0 0 1rem;color:var(--muted)}
+
+.view{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s ease;overflow:auto}
+.view.active{opacity:1;pointer-events:auto}
+
+.btn{
+  appearance:none; border:1px solid var(--border); background:transparent; color:var(--text);
+  padding:10px 18px; border-radius:10px; font-size:16px; font-weight:500; cursor:pointer;
+  transition:.15s; display:inline-flex; align-items:center; gap:8px;
+}
+.btn:hover{border-color:var(--primary); background:rgba(59,130,246,.08)}
+.btn.primary{background:var(--primary); border-color:var(--primary); color:white}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.sm{padding:6px 12px; font-size:14px; border-radius:8px}
+
+input{
+  width:100%; padding:12px 14px; background:var(--card-2); border:1px solid var(--border);
+  border-radius:10px; color:var(--text); font-size:16px; outline:none; transition:.15s;
+}
+input:focus{border-color:var(--primary); box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+
+.card{
+  background:var(--card); border:1px solid var(--border); border-radius:16px;
+  padding:24px; box-shadow:0 4px 12px rgba(0,0,0,.15);
+}
+.center{text-align:center}
+
+/* Landing */
+#landing{display:flex; align-items:center; justify-content:center; padding:24px}
+.landing-card{width:100%; max-width:420px}
+.landing-header{text-align:center;margin-bottom:24px}
+.landing-header h1{font-size:28px;letter-spacing:-.02em}
+.landing-header p{font-size:16px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block; font-size:14px; color:var(--muted); margin:0 0 6px 2px}
+.role-toggle{display:grid; grid-template-columns:1fr 1fr; gap:4px; background:var(--card-2); padding:4px; border-radius:10px; border:1px solid var(--border)}
+.role-toggle button{padding:10px; border-radius:8px; border:0; background:transparent; color:var(--muted); font-weight:500; cursor:pointer}
+.role-toggle button.active{background:var(--primary); color:white}
+.top-actions{position:fixed; top:16px; right:16px; display:flex; gap:8px; z-index:50}
+.icon-btn{width:40px; height:40px; display:grid; place-items:center; background:var(--card); border:1px solid var(--border); border-radius:10px; color:var(--muted); cursor:pointer; transition:.15s}
+.icon-btn:hover{color:var(--text); border-color:var(--primary)}
+
+/* Top bar */
+.topbar{position:sticky; top:0; z-index:40; background:rgba(15,23,42,.8); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); padding:12px 20px; display:flex; align-items:center; justify-content:space-between; gap:16px}
+.status-wrap{display:flex; align-items:center; gap:12px; font-size:15px}
+.status-badge{padding:4px 10px; border-radius:999px; background:var(--card); border:1px solid var(--border); font-size:13px; color:var(--muted)}
+.actions{display:flex; gap:8px}
+
+.timer-bar{position:fixed; top:0; left:0; right:0; height:3px; background:var(--border); z-index:100}
+.timer-fill{height:100%; width:0%; background:var(--primary); transition:width .1s linear}
+
+/* Host */
+.host-main{max-width:1400px; margin:0 auto; padding:24px; display:grid; grid-template-columns:1fr 320px; gap:24px}
+@media(max-width:1024px){.host-main{grid-template-columns:1fr}}
+.question-card{padding:32px}
+.q-meta{display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap}
+.q-domain{font-size:13px; color:var(--muted); padding:3px 8px; background:var(--card-2); border:1px solid var(--border); border-radius:6px}
+.q-counter{font-size:14px; color:var(--muted)}
+.question-text{font-size:28px; font-weight:600; line-height:1.35; margin:0 0 28px; color:var(--text)}
+.options-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+@media(max-width:640px){.options-grid{grid-template-columns:1fr}}
+.option{
+  padding:18px 20px; background:transparent; border:2px solid var(--border); border-radius:12px;
+  text-align:left; font-size:20px; color:var(--text); cursor:default; transition:.15s; display:flex; gap:14px; align-items:flex-start;
+}
+.option .letter{font-weight:700; width:28px; flex-shrink:0; opacity:.7}
+.option.correct{border-color:var(--success); background:rgba(16,185,129,.08)}
+.option.correct .letter{color:var(--success); opacity:1}
+.option.dim{opacity:.45}
+.explanation{margin-top:24px; padding:16px; background:var(--card-2); border-left:3px solid var(--primary); border-radius:8px; font-size:15px; color:var(--muted)}
+
+.sidebar{display:flex; flex-direction:column; gap:16px}
+.stat-card{padding:18px}
+.stat-card h3{font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin:0 0 8px; font-weight:500}
+.stat-value{font-size:32px; font-weight:600; line-height:1}
+.stat-sub{font-size:13px; color:var(--muted); margin-top:4px}
+.leaderboard ol{list-style:none; padding:0; margin:12px 0 0}
+.leaderboard li{display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); font-size:15px}
+.leaderboard li:last-child{border:0}
+.leaderboard .name{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding-right:12px}
+.leaderboard .pts{color:var(--muted); font-variant-numeric:tabular-nums}
+
+/* Player */
+.player-header{padding:14px 20px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); background:var(--card)}
+.player-main{max-width:720px; margin:0 auto; padding:24px 20px}
+.player-waiting{padding:48px 24px}
+.player-waiting h2{font-size:24px; margin-bottom:8px}
+.pin-display{font-family:ui-monospace,monospace; font-size:20px; letter-spacing:.1em; color:var(--primary); margin-top:12px}
+
+.player-question .question-text{font-size:24px; margin-bottom:24px}
+.player-options{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:24px}
+@media(max-width:560px){.player-options{grid-template-columns:1fr}}
+.player-opt{
+  min-height:128px; padding:20px; background:var(--card); border:2px solid var(--border); border-radius:16px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; cursor:pointer; transition:.15s; touch-action:manipulation;
+}
+.player-opt:active{transform:scale(.98)}
+.player-opt .letter{font-size:32px; font-weight:700; width:48px; height:48px; display:grid; place-items:center; border-radius:12px; border:2px solid currentColor}
+.player-opt .opt-text{font-size:16px; color:var(--muted); text-align:center; line-height:1.3}
+.opt-a{color:var(--red); border-color:var(--red)}
+.opt-b{color:var(--blue); border-color:var(--blue)}
+.opt-c{color:var(--yellow); border-color:var(--yellow)}
+.opt-d{color:var(--green); border-color:var(--green)}
+.player-opt.selected{border-color:currentColor; background:currentColor; background:rgba(255,255,255,.04)}
+.player-opt.disabled{opacity:.4; pointer-events:none}
+.player-opt.correct{border-color:var(--success)!important; box-shadow:0 0 0 3px rgba(16,185,129,.2)}
+.player-opt.wrong{border-color:var(--danger)!important; opacity:.6}
+
+.result-card{padding:40px 24px}
+.result-icon{width:64px; height:64px; margin:0 auto 16px; border-radius:50%; display:grid; place-items:center; font-size:32px}
+.result-icon.ok{background:rgba(16,185,129,.15); color:var(--success)}
+.result-icon.bad{background:rgba(239,68,68,.15); color:var(--danger)}
+.result-points{font-size:36px; font-weight:700; margin:8px 0; font-variant-numeric:tabular-nums}
+.result-expl{max-width:520px; margin:16px auto 0; font-size:15px}
+
+/* Modal */
+.modal{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; padding:20px; z-index:200}
+.modal.show{display:flex}
+.modal-card{width:100%; max-width:640px; max-height:90vh; overflow:auto}
+.modal-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px}
+.modal-header h3{font-size:20px}
+.close-btn{background:none; border:0; color:var(--muted); font-size:24px; cursor:pointer; line-height:1}
+.help-content{font-size:15px; color:var(--muted)}
+.help-content h4{color:var(--text); margin:20px 0 8px; font-size:16px}
+.help-content code{background:var(--card-2); padding:2px 6px; border-radius:4px; font-size:13px; border:1px solid var(--border)}
+.help-content pre{background:var(--card-2); padding:12px; border-radius:8px; overflow:auto; border:1px solid var(--border); font-size:12px; line-height:1.5}
+.help-content ol{padding-left:20px}
+.help-content li{margin-bottom:8px}
+
+.hidden{display:none!important}
+.muted{color:var(--muted)}
+.fade-in{animation:fade .3s ease}
+@keyframes fade{from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:none}}
+</style>
+</head>
+<body>
+<div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
+
+<div class="top-actions">
+  <button class="icon-btn" id="btnHelp" title="Help" aria-label="Help">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+  </button>
+  <button class="icon-btn" id="btnSettings" title="Settings" aria-label="Settings">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 0 0 0 9 4.6a1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09c0 .66.39 1.26 1 1.51.55.22 1.17.14 1.64-.21l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06c-.35.47-.43 1.09-.21 1.64.25.61.85 1 1.51 1H21a2 2 0 0 1 0 4h-.09c-.66 0-1.26.39-1.51 1z"/></svg>
+  </button>
+</div>
+
+<!-- Landing -->
+<div id="landing" class="view active">
+  <div class="landing-card card">
+    <div class="landing-header">
+      <h1>CompTIA Network+ Quiz</h1>
+      <p>Clean, focused study sessions</p>
+    </div>
+    <form id="joinForm">
+      <div class="form-group">
+        <label for="nameInput">Name</label>
+        <input id="nameInput" autocomplete="name" placeholder="Alex" required>
+      </div>
+      <div class="form-group">
+        <label for="pinInput">Game PIN (Sheet ID last 6 chars)</label>
+        <input id="pinInput" placeholder="e.g. 1a2b3c or full Sheet ID" required>
+      </div>
+      <div class="form-group">
+        <label>Role</label>
+        <div class="role-toggle" id="roleToggle">
+          <button type="button" data-role="player" class="active">Player</button>
+          <button type="button" data-role="host">Host</button>
+        </div>
+      </div>
+      <button class="btn primary" style="width:100%; margin-top:8px; justify-content:center" type="submit">Join Session</button>
+      <p class="muted" style="font-size:13px; text-align:center; margin:12px 0 0">Host: paste full Google Sheet ID. Players: use PIN.</p>
+    </form>
+  </div>
+</div>
+
+<!-- Host View -->
+<div id="hostView" class="view">
+  <div class="topbar">
+    <div class="status-wrap">
+      <strong>Host</strong>
+      <span class="status-badge" id="hostStatus">Lobby</span>
+      <span class="q-counter" id="hostQCounter">Q 0 / 0</span>
+    </div>
+    <div class="actions">
+      <button class="btn sm" id="btnPrev" disabled>Prev</button>
+      <button class="btn primary sm" id="btnStart">Start</button>
+      <button class="btn sm" id="btnNext" disabled>Next</button>
+      <button class="btn sm" id="btnReveal" disabled>Reveal</button>
+      <button class="btn sm" id="btnEnd">End</button>
+    </div>
+  </div>
+  <main class="host-main">
+    <div>
+      <div class="question-card card">
+        <div class="q-meta">
+          <span class="q-domain" id="hostDomain">Network+</span>
+          <span class="q-counter" id="hostTimerText"></span>
+        </div>
+        <h2 class="question-text" id="hostQuestion">Waiting to start session…</h2>
+        <div class="options-grid" id="hostOptions"></div>
+        <div id="hostExplanation" class="explanation hidden"></div>
+      </div>
+    </div>
+    <aside class="sidebar">
+      <div class="card stat-card">
+        <h3>Players</h3>
+        <div class="stat-value" id="playerCount">0</div>
+        <div class="stat-sub">joined</div>
+      </div>
+      <div class="card stat-card">
+        <h3>Responses</h3>
+        <div class="stat-value" id="answeredCount">0</div>
+        <div class="stat-sub"><span id="correctPct">0%</span> correct</div>
+      </div>
+      <div class="card stat-card leaderboard">
+        <h3>Leaderboard</h3>
+        <ol id="hostLeaderboard"><li class="muted">No data yet</li></ol>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<!-- Player View -->
+<div id="playerView" class="view">
+  <header class="player-header">
+    <div><strong id="playerNameDisplay">Player</strong> <span class="muted" style="margin-left:8px">PIN <span id="playerPinDisplay">—</span></span></div>
+    <div style="font-variant-numeric:tabular-nums"><span id="playerScore">0</span> pts</div>
+  </header>
+  <main class="player-main">
+    <div id="playerWaiting" class="card player-waiting center fade-in">
+      <h2>Waiting for host to start</h2>
+      <p>You’re in. Questions will appear here.</p>
+      <div class="pin-display" id="waitingPin"></div>
+    </div>
+
+    <div id="playerQuestion" class="hidden">
+      <div class="card question-card">
+        <div class="q-meta"><span class="q-counter" id="playerQCounter">Q 1</span></div>
+        <h2 class="question-text" id="playerQuestionText" style="font-size:24px"></h2>
+      </div>
+      <div class="player-options">
+        <button class="player-opt opt-a" data-answer="A"><span class="letter">A</span><span class="opt-text" id="optAText"></span></button>
+        <button class="player-opt opt-b" data-answer="B"><span class="letter">B</span><span class="opt-text" id="optBText"></span></button>
+        <button class="player-opt opt-c" data-answer="C"><span class="letter">C</span><span class="opt-text" id="optCText"></span></button>
+        <button class="player-opt opt-d" data-answer="D"><span class="letter">D</span><span class="opt-text" id="optDText"></span></button>
+      </div>
+    </div>
+
+    <div id="playerResult" class="card result-card center hidden">
+      <div class="result-icon" id="resultIcon">✓</div>
+      <h2 id="resultText">Correct</h2>
+      <div class="result-points" id="resultPoints">+0</div>
+      <p class="muted" id="resultStatus">Waiting for next question…</p>
+      <p class="result-expl" id="resultExplanation"></p>
+    </div>
+
+    <div id="playerEnd" class="card result-card center hidden">
+      <h2>Session Ended</h2>
+      <div class="result-points" id="finalScore">0 pts</div>
+      <p class="muted">Great work studying Network+</p>
+      <button class="btn" style="margin-top:16px" onclick="location.reload()">Leave</button>
+    </div>
+  </main>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal" id="settingsModal">
+  <div class="modal-card card">
+    <div class="modal-header">
+      <h3>Settings</h3>
+      <button class="close-btn" data-close="settingsModal">×</button>
+    </div>
+    <div class="form-group">
+      <label>Apps Script URL</label>
+      <input id="appsScriptInput" placeholder="https://script.google.com/macros/s/.../exec">
+      <p class="muted" style="font-size:13px; margin-top:6px">Used to sync game state and record answers. Stored locally.</p>
+    </div>
+    <div class="form-group">
+      <label>Google Sheet ID (optional override)</label>
+      <input id="sheetIdInput" placeholder="Full Sheet ID">
+    </div>
+    <button class="btn primary" id="saveSettings">Save</button>
+  </div>
+</div>
+
+<!-- Help Modal -->
+<div class="modal" id="helpModal">
+  <div class="modal-card card">
+    <div class="modal-header">
+      <h3>Setup Guide</h3>
+      <button class="close-btn" data-close="helpModal">×</button>
+    </div>
+    <div class="help-content">
+      <h4>1. Google Sheet Structure</h4>
+      <p>Create a Sheet with three tabs:</p>
+      <p><strong>Questions</strong>: <code>Question | A | B | C | D | Correct | Explanation | Domain</code></p>
+      <p><strong>GameState</strong>: <code>status | current | startTime | pin</code> (add one row of headers, leave data empty)</p>
+      <p><strong>Responses</strong>: <code>timestamp | pin | player | questionIndex | answer | correct | timeMs | points</code></p>
+      <p>Share sheet: Anyone with link → Viewer.</p>
+
+      <h4>2. Apps Script</h4>
+      <p>Extensions → Apps Script → paste this, deploy as Web App (Anyone):</p>
+      <pre>const SHEET_ID_DEFAULT = '';
+function doPost(e){
+  const data = JSON.parse(e.postData.contents);
+  const ss = SpreadsheetApp.openById(data.sheetId || SHEET_ID_DEFAULT);
+  if(data.action === 'hostUpdate'){
+    const sh = ss.getSheetByName('GameState');
+    sh.getRange(2,1,1,4).setValues([[data.status, data.questionIndex, data.startTime, data.pin]]);
+    return ContentService.createTextOutput('ok');
+  }
+  if(data.action === 'submitAnswer'){
+    const sh = ss.getSheetByName('Responses');
+    sh.appendRow([new Date(), data.pin, data.player, data.questionIndex, data.answer, data.correct, data.timeMs, data.points]);
+    return ContentService.createTextOutput('ok');
+  }
+}
+function doGet(e){ return ContentService.createTextOutput('ok'); }</pre>
+
+      <h4>3. Use</h4>
+      <ol>
+        <li>Host: open Settings → paste Apps Script URL and full Sheet ID</li>
+        <li>Host: enter name, paste full Sheet ID in PIN field, select Host → Join</li>
+        <li>Players: enter name, enter last 6 chars of Sheet ID, select Player → Join</li>
+        <li>Host controls Start / Next / Reveal. Timer is 20s. Points: 200–1000 for correct.</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+const STATE = {
+  role: 'player', name: '', pin: '', sheetId: '', appsScript: '',
+  questions: [], gameState: {status:'lobby', current:0, startTime:0, pin:''},
+  player:{score:0, answered:false, lastAnswer:null, lastPoints:0},
+  poll:null, timer:null, isHost:false
+};
+
+const CFG_KEY = 'nplus_cfg_v2';
+function loadCfg(){
+  const cfg = JSON.parse(localStorage.getItem(CFG_KEY)||'{}');
+  STATE.appsScript = cfg.appsScript||'';
+  STATE.sheetId = cfg.sheetId||'';
+  $('#appsScriptInput').value = STATE.appsScript;
+  $('#sheetIdInput').value = STATE.sheetId;
+}
+function saveCfg(){
+  localStorage.setItem(CFG_KEY, JSON.stringify({appsScript:STATE.appsScript, sheetId:STATE.sheetId}));
+}
+
+function show(viewId){
+  $$('.view').forEach(v=>v.classList.remove('active'));
+  $('#'+viewId).classList.add('active');
+}
+function parseCSV(text){
+  const lines = text.split(/\r?\n/).filter(l=>l.trim());
+  if(!lines.length) return [];
+  const parse = l => {
+    const out=[]; let cur='', inQ=false;
+    for(let i=0;i<l.length;i++){
+      const c=l[i], n=l[i+1];
+      if(c==='"'){inQ ? (n==='"'? (cur+='"',i++) : inQ=false) : inQ=true}
+      else if(c===',' && !inQ){out.push(cur);cur=''}
+      else cur+=c
+    }
+    out.push(cur); return out.map(s=>s.replace(/^"|"$/g,'').trim());
+  };
+  const headers=parse(lines[0]); const rows=[];
+  for(let i=1;i<lines.length;i++){const vals=parse(lines[i]); const o={}; headers.forEach((h,idx)=>o[h]=vals[idx]||''); rows.push(o);}
+  return rows;
+}
+async function fetchCSV(sheet){
+  const url = `https://docs.google.com/spreadsheets/d/${STATE.sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheet)}&t=${Date.now()}`;
+  const res = await fetch(url); if(!res.ok) throw new Error('Sheet fetch failed');
+  return parseCSV(await res.text());
+}
+async function loadQuestions(){
+  const rows = await fetchCSV('Questions');
+  STATE.questions = rows.filter(r=>r.Question).map(r=>({
+    q:r.Question, A:r.A, B:r.B, C:r.C, D:r.D,
+    correct:(r.Correct||'').toUpperCase().trim(),
+    explanation:r.Explanation||'', domain:r.Domain||'Network+'
+  }));
+}
+async function postState(payload){
+  if(!STATE.appsScript) return;
+  try{
+    await fetch(STATE.appsScript, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload)});
+  }catch(e){console.warn(e)}
+}
+
+function setTimer(startTime, duration=20000){
+  clearInterval(STATE.timer);
+  const fill = $('#timerFill');
+  const tick = ()=>{
+    const elapsed = Date.now() - startTime;
+    const pct = Math.min(100, Math.max(0, (elapsed/duration)*100));
+    fill.style.width = pct+'%';
+    if($('#hostTimerText')) $('#hostTimerText').textContent = Math.max(0, Math.ceil((duration-elapsed)/1000))+'s';
+    if(pct>=100) clearInterval(STATE.timer);
+  };
+  tick(); STATE.timer = setInterval(tick, 50);
+}
+function resetTimer(){ $('#timerFill').style.width='0%'; clearInterval(STATE.timer); }
+
+// Role toggle
+$('#roleToggle').addEventListener('click', e=>{
+  if(e.target.tagName!=='BUTTON') return;
+  $('#roleToggle button.active').classList.remove('active');
+  e.target.classList.add('active');
+  STATE.role = e.target.dataset.role;
+});
+
+// Join
+$('#joinForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  STATE.name = $('#nameInput').value.trim() || 'Player';
+  let pin = $('#pinInput').value.trim();
+  STATE.isHost = STATE.role==='host';
+  
+  if(!STATE.appsScript){ alert('Please set Apps Script URL in Settings'); return; }
+  
+  if(STATE.isHost){
+    STATE.sheetId = pin.length>20 ? pin : (STATE.sheetId || $('#sheetIdInput').value);
+    if(!STATE.sheetId){ alert('Host needs full Sheet ID'); return; }
+    STATE.pin = STATE.sheetId.slice(-6);
+    saveCfg();
+  } else {
+    STATE.pin = pin.slice(-6);
+    // try to resolve full ID from host cache or settings
+    const cached = localStorage.getItem('sheet_'+STATE.pin);
+    STATE.sheetId = cached || STATE.sheetId || $('#sheetIdInput').value || '';
+    if(!STATE.sheetId){ // try assume pin is full id
+      if(pin.length>20) STATE.sheetId = pin;
+      else { alert('Player needs host to start first, or enter full Sheet ID'); return; }
+    }
+  }
+  localStorage.setItem('sheet_'+STATE.pin, STATE.sheetId);
+  
+  try{ await loadQuestions(); } catch(err){ alert('Failed to load Questions. Check Sheet ID and sharing.'); return; }
+  
+  $('#playerNameDisplay').textContent = STATE.name;
+  $('#playerPinDisplay').textContent = STATE.pin;
+  $('#waitingPin').textContent = STATE.pin;
+  
+  if(STATE.isHost){
+    show('hostView'); $('#hostQCounter').textContent = `Q 0 / ${STATE.questions.length}`;
+    await postState({action:'hostUpdate', sheetId:STATE.sheetId, pin:STATE.pin, status:'lobby', questionIndex:0, startTime:Date.now()});
+    startPolling(hostTick, 1500);
+    renderHostLobby();
+  } else {
+    show('playerView');
+    startPolling(playerTick, 1200);
+  }
+});
+
+// Host controls
+$('#btnStart').onclick = async ()=>{
+  STATE.gameState.current = 0;
+  await goQuestion(0);
+};
+$('#btnNext').onclick = async ()=>{
+  if(STATE.gameState.current < STATE.questions.length-1){
+    await goQuestion(STATE.gameState.current+1);
+  }
+};
+$('#btnPrev').onclick = async ()=>{
+  if(STATE.gameState.current>0) await goQuestion(STATE.gameState.current-1);
+};
+$('#btnReveal').onclick = async ()=>{
+  await postState({action:'hostUpdate', sheetId:STATE.sheetId, pin:STATE.pin, status:'reveal', questionIndex:STATE.gameState.current, startTime:STATE.gameState.startTime});
+};
+$('#btnEnd').onclick = async ()=>{
+  await postState({action:'hostUpdate', sheetId:STATE.sheetId, pin:STATE.pin, status:'ended', questionIndex:STATE.gameState.current, startTime:Date.now()});
+};
+
+async function goQuestion(idx){
+  STATE.gameState.current = idx;
+  STATE.gameState.startTime = Date.now();
+  await postState({action:'hostUpdate', sheetId:STATE.sheetId, pin:STATE.pin, status:'question', questionIndex:idx, startTime:STATE.gameState.startTime});
+  renderHostQuestion();
+  setTimer(STATE.gameState.startTime);
+  setTimeout(()=>{ if(STATE.gameState.status==='question') $('#btnReveal').click(); }, 20000);
+}
+
+function renderHostLobby(){
+  $('#hostStatus').textContent='Lobby'; $('#hostQuestion').textContent='Waiting to start session…';
+  $('#hostOptions').innerHTML=''; $('#hostExplanation').classList.add('hidden'); resetTimer();
+  $('#btnStart').disabled=false; $('#btnNext').disabled=true; $('#btnPrev').disabled=true; $('#btnReveal').disabled=true;
+}
+function renderHostQuestion(){
+  const q = STATE.questions[STATE.gameState.current];
+  $('#hostStatus').textContent='Question'; $('#hostQCounter').textContent=`Q ${STATE.gameState.current+1} / ${STATE.questions.length}`;
+  $('#hostQuestion').textContent = q.q; $('#hostDomain').textContent = q.domain;
+  $('#hostOptions').innerHTML = ['A','B','C','D'].map(l=>`<div class="option" data-l="${l}"><span class="letter">${l}</span><span>${q[l]}</span></div>`).join('');
+  $('#hostExplanation').classList.add('hidden');
+  $('#btnStart').disabled=true; $('#btnNext').disabled=false; $('#btnPrev').disabled=STATE.gameState.current===0; $('#btnReveal').disabled=false;
+}
+function renderHostReveal(){
+  const q = STATE.questions[STATE.gameState.current];
+  $('#hostStatus').textContent='Reveal';
+  $$('#hostOptions .option').forEach(o=>{ const l=o.dataset.l; o.classList.toggle('correct', l===q.correct); o.classList.toggle('dim', l!==q.correct); });
+  $('#hostExplanation').textContent = q.explanation || 'No explanation'; $('#hostExplanation').classList.remove('hidden');
+  resetTimer();
+}
+
+async function hostTick(){
+  try{
+    const gs = await fetchCSV('GameState');
+    if(gs[0]){ const r=gs[0]; STATE.gameState.status=r.status||'lobby'; STATE.gameState.current = parseInt(r.current||r.questionIndex||0); STATE.gameState.startTime = parseInt(r.startTime||0); }
+    const responses = await fetchCSV('Responses').catch(()=>[]);
+    const myRes = responses.filter(r=>r.pin===STATE.pin);
+    const players = new Set(myRes.map(r=>r.player));
+    $('#playerCount').textContent = players.size;
+    const curRes = myRes.filter(r=>+r.questionIndex===STATE.gameState.current);
+    $('#answeredCount').textContent = curRes.length;
+    const correct = curRes.filter(r=>(r.correct+'').toLowerCase()==='true').length;
+    $('#correctPct').textContent = curRes.length? Math.round(correct/curRes.length*100)+'%' : '0%';
+    // leaderboard
+    const scores={}; myRes.forEach(r=>{ scores[r.player]=(scores[r.player]||0)+ (+r.points||0); });
+    const top = Object.entries(scores).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    $('#hostLeaderboard').innerHTML = top.length? top.map(([n,p])=>`<li><span class="name">${n}</span><span class="pts">${p}</span></li>`).join('') : '<li class="muted">No answers yet</li>';
+    // sync UI if host view out of sync
+    if(STATE.gameState.status==='question' && $('#hostStatus').textContent!=='Question') renderHostQuestion();
+    if(STATE.gameState.status==='reveal') renderHostReveal();
+    if(STATE.gameState.status==='lobby') renderHostLobby();
+    if(STATE.gameState.status==='ended'){ $('#hostQuestion').textContent='Session ended'; resetTimer(); }
+  }catch(e){ console.warn(e) }
+}
+
+async function playerTick(){
+  try{
+    const gs = await fetchCSV('GameState');
+    if(!gs[0]) return;
+    const r=gs[0]; const prevStatus = STATE.gameState.status; const prevQ = STATE.gameState.current;
+    STATE.gameState = {status:r.status, current:parseInt(r.current||0), startTime:parseInt(r.startTime||0), pin:r.pin};
+    
+    if(STATE.gameState.status==='lobby'){
+      showPlayer('waiting');
+    } else if(STATE.gameState.status==='question'){
+      if(prevQ!==STATE.gameState.current || prevStatus!=='question'){
+        STATE.player.answered=false; STATE.player.lastAnswer=null;
+      }
+      showPlayer('question'); renderPlayerQuestion(); setTimer(STATE.gameState.startTime);
+    } else if(STATE.gameState.status==='reveal'){
+      showPlayer('result'); renderPlayerResult(); resetTimer();
+    } else if(STATE.gameState.status==='ended'){
+      showPlayer('end'); $('#finalScore').textContent = STATE.player.score+' pts'; resetTimer();
+    }
+  }catch(e){ console.warn(e) }
+}
+
+function showPlayer(which){
+  $('#playerWaiting').classList.toggle('hidden', which!=='waiting');
+  $('#playerQuestion').classList.toggle('hidden', which!=='question');
+  $('#playerResult').classList.toggle('hidden', which!=='result');
+  $('#playerEnd').classList.toggle('hidden', which!=='end');
+}
+function renderPlayerQuestion(){
+  const q = STATE.questions[STATE.gameState.current]; if(!q) return;
+  $('#playerQCounter').textContent = `Q ${STATE.gameState.current+1} / ${STATE.questions.length}`;
+  $('#playerQuestionText').textContent = q.q;
+  $('#optAText').textContent = q.A; $('#optBText').textContent = q.B;
+  $('#optCText').textContent = q.C; $('#optDText').textContent = q.D;
+  $$('.player-opt').forEach(b=>{ b.classList.remove('selected','disabled','correct','wrong'); b.disabled=false; });
+  if(STATE.player.answered){ $$('.player-opt').forEach(b=>{ b.disabled = b.dataset.answer!==STATE.player.lastAnswer; if(b.dataset.answer===STATE.player.lastAnswer) b.classList.add('selected'); }); }
+}
+function renderPlayerResult(){
+  const q = STATE.questions[STATE.gameState.current];
+  const correct = STATE.player.lastAnswer === q.correct;
+  $('#resultIcon').className='result-icon '+(correct?'ok':'bad'); $('#resultIcon').textContent = correct?'✓':'✗';
+  $('#resultText').textContent = correct?'Correct':'Incorrect';
+  $('#resultPoints').textContent = (correct?'+':'') + STATE.player.lastPoints;
+  $('#resultExplanation').textContent = q.explanation||'';
+  $$('.player-opt').forEach(b=>{ const a=b.dataset.answer; b.classList.toggle('correct', a===q.correct); b.classList.toggle('wrong', a===STATE.player.lastAnswer && a!==q.correct); b.disabled=true; });
+}
+
+$$('.player-opt').forEach(btn=>{
+  btn.addEventListener('click', async ()=>{
+    if(STATE.player.answered || STATE.gameState.status!=='question') return;
+    const ans = btn.dataset.answer;
+    STATE.player.answered = true; STATE.player.lastAnswer = ans;
+    btn.classList.add('selected'); $$('.player-opt').forEach(b=>{ if(b!==btn) b.classList.add('disabled'); });
+    const timeTaken = Date.now() - STATE.gameState.startTime;
+    const timeLeft = Math.max(0, 20000 - timeTaken);
+    const q = STATE.questions[STATE.gameState.current];
+    const correct = ans===q.correct;
+    const points = correct ? Math.round((timeLeft/20000)*800 + 200) : 0;
+    STATE.player.lastPoints = points; STATE.player.score += points;
+    $('#playerScore').textContent = STATE.player.score;
+    await postState({action:'submitAnswer', sheetId:STATE.sheetId, pin:STATE.pin, player:STATE.name, questionIndex:STATE.gameState.current, answer:ans, correct, timeMs:timeTaken, points});
+  });
+});
+
+function startPolling(fn, ms){ clearInterval(STATE.poll); fn(); STATE.poll=setInterval(fn, ms); }
+
+// Modals
+$('#btnSettings').onclick = ()=> $('#settingsModal').classList.add('show');
+$('#btnHelp').onclick = ()=> $('#helpModal').classList.add('show');
+$$('.close-btn').forEach(b=> b.onclick = ()=> $('#'+b.dataset.close).classList.remove('show'));
+$('#saveSettings').onclick = ()=>{
+  STATE.appsScript = $('#appsScriptInput').value.trim();
+  STATE.sheetId = $('#sheetIdInput').value.trim() || STATE.sheetId;
+  saveCfg(); $('#settingsModal').classList.remove('show');
+};
+window.addEventListener('keydown', e=>{ if(e.key==='Escape') $$('.modal').forEach(m=>m.classList.remove('show')) });
+
+loadCfg();
+</script>
+</body>
+</html>

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NetPlus Pro — CompTIA Network+ N10-009 Practice Platform</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://js.stripe.com/v3/"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+body{font-family:Inter,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+.font-mono{font-family:"JetBrains Mono",monospace}
+*{-webkit-tap-highlight-color:transparent}
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+<div class="bg-[#C41E3A] text-white text-[11px] sm:text-xs py-1.5 px-2 text-center font-medium tracking-wide">
+  <span class="inline-flex items-center gap-1.5"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 6h2v6h-2zm0 8h2v2h-2z"/></svg> CompTIA Authorized Practice Partner — Application Pending</span>
+</div>
+
+<header class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-gray-200">
+  <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <div class="w-8 h-8 rounded-lg bg-[#0B1120] text-white grid place-items-center font-bold text-sm">N+</div>
+      <span class="font-semibold tracking-tight">NetPlus Pro</span>
+      <span id="planBadge" class="hidden text-[10px] px-1.5 py-0.5 rounded bg-violet-600 text-white font-medium">PRO</span>
+      <span id="schoolBadge" class="hidden text-[10px] px-1.5 py-0.5 rounded bg-emerald-600 text-white font-medium">SCHOOL</span>
+    </div>
+    <nav class="hidden md:flex items-center gap-6 text-[14px]">
+      <button data-nav="play" class="hover:text-violet-600">Practice</button>
+      <button data-nav="host" class="hover:text-violet-600">Host</button>
+      <button data-nav="resources" class="hover:text-violet-600">Resources</button>
+      <button data-nav="pricing" class="hover:text-violet-600">Pricing</button>
+      <button data-nav="dashboard" class="hover:text-violet-600">Dashboard</button>
+    </nav>
+    <div class="flex items-center gap-2">
+      <button id="upgradeTop" class="hidden sm:inline-flex text-xs font-medium px-3 py-1.5 rounded-lg bg-[#0B1120] text-white hover:bg-black">Upgrade to Pro – $9/mo</button>
+      <button id="mobileMenu" class="md:hidden p-2">☰</button>
+    </div>
+  <div id="mobileNav" class="md:hidden hidden border-t bg-white">
+    <div class="px-4 py-3 flex flex-col gap-3 text-sm">
+      <button data-nav="play" class="text-left">Practice</button>
+      <button data-nav="host" class="text-left">Host</button>
+      <button data-nav="resources" class="text-left">Resources</button>
+      <button data-nav="pricing" class="text-left">Pricing</button>
+      <button data-nav="dashboard" class="text-left">Dashboard</button>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-4 py-8">
+  <!-- LANDING -->
+  <section id="view-landing">
+    <div class="grid lg:grid-cols-2 gap-12 items-center py-8">
+      <div>
+        <div class="inline-flex items-center gap-2 text-[11px] px-2.5 py-1 rounded-full bg-violet-50 text-violet-700 border border-violet-200 mb-4">N10-009 • Updated 2025</div>
+        <h1 class="text-[40px] leading-[1.05] sm:text-5xl font-bold tracking-tight">CompTIA Network+ practice that feels <span class="text-violet-600">like game day</span></h1>
+        <p class="mt-4 text-gray-600 text-[15px] leading-relaxed">Ultra-fast, classroom-ready platform. Host live quizzes for up to 25 players free. Certificates, analytics, and custom branding when you upgrade.</p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <button data-nav="play" class="px-5 py-3 bg-[#0B1120] text-white rounded-xl font-medium hover:opacity-90">Start Free Practice →</button>
+          <button data-nav="host" class="px-5 py-3 border border-gray-300 rounded-xl font-medium hover:bg-gray-50">Host Live Game</button>
+        </div>
+        <button id="schoolLoginBtn" class="mt-4 text-sm text-gray-700 underline underline-offset-2">School / Enterprise Login with SSO →</button>
+        <div class="mt-6 flex items-center gap-5 text-xs text-gray-500">
+          <span>✓ No signup</span><span>✓ Instant certificates</span><span>✓ 60s setup</span>
+        </div>
+      <div class="bg-white rounded-[20px] shadow-sm border border-gray-200 p-5">
+        <div class="flex items-center justify-between mb-3">
+          <div class="text-sm font-medium">Live demo room</div>
+          <div class="text-[11px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">Free tier: 25 max</div>
+        </div>
+        <div class="aspect-[16/9] bg-gray-950 rounded-xl grid place-items-center text-white">
+          <div class="text-center">
+            <div class="text-[11px] opacity-70 tracking-widest">JOIN CODE</div>
+            <div class="font-mono text-4xl tracking-wider mt-1">NPLUS</div>
+            <div class="text-xs opacity-60 mt-2">netplus.pro/join</div>
+          </div>
+        </div>
+        <div class="mt-4 grid grid-cols-3 gap-2 text-[11px]">
+          <div class="p-2.5 rounded-lg bg-gray-50 border text-center">25 players free</div>
+          <div class="p-2.5 rounded-lg bg-gray-50 border text-center">200 with Pro</div>
+          <div class="p-2.5 rounded-lg bg-gray-50 border text-center">SSO for schools</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOST -->
+  <section id="view-host" class="hidden">
+    <div class="grid lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+        <div class="flex items-start justify-between">
+          <div>
+            <h2 class="text-xl font-semibold">Host Live Game</h2>
+            <p class="text-sm text-gray-600 mt-1">Players join at netplus.pro/join</p>
+          </div>
+          <div class="text-right">
+            <div class="text-[11px] text-gray-500">JOIN CODE</div>
+            <div id="gameCode" class="font-mono text-3xl font-bold tracking-wider">827491</div>
+          </div>
+        <div class="mt-6">
+          <div class="flex items-baseline justify-between">
+            <div class="text-sm font-medium">Players</div>
+            <div class="text-sm"><span id="pcount">0</span> / <span id="plimit">25</span></div>
+          </div>
+          <div class="w-full bg-gray-200 h-2 rounded-full mt-2 overflow-hidden"><div id="pbar" class="h-2 bg-[#0B1120] rounded-full transition-all" style="width:0%"></div></div>
+          <div id="limitWarning" class="hidden mt-3 p-3 bg-amber-50 border border-amber-200 rounded-xl text-[13px]">You're at 20/25 players (Free tier). <button class="underline font-medium" onclick="showUpgrade()">Upgrade to Pro</button> for 200 players, custom branding, and analytics.</div>
+        </div>
+        <div class="mt-6 flex flex-wrap gap-2">
+          <button id="addFakePlayer" class="px-4 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-medium hover:bg-black">+ Simulate Player Join</button>
+          <button id="startGame" class="px-4 py-2.5 bg-violet-600 text-white rounded-xl text-sm font-medium hover:bg-violet-700">Start Practice →</button>
+          <button id="resetPlayers" class="px-3 py-2.5 border rounded-xl text-sm">Reset</button>
+        </div>
+        <div class="mt-6 border-t pt-4">
+          <div class="text-xs text-gray-500">Free tier limits enforced in browser via localStorage. Pro unlocks 200 players, SSO, and removes limits.</div>
+        </div>
+      <div class="space-y-4">
+        <div class="bg-white rounded-2xl border border-gray-200 p-5">
+          <h3 class="font-semibold flex items-center gap-2">Custom Branding <span class="text-[10px] px-1.5 py-0.5 rounded bg-violet-100 text-violet-700">PRO</span></h3>
+          <p class="text-[13px] text-gray-600 mt-1.5">Add your school logo, colors, and remove NetPlus branding.</p>
+          <button id="brandBtn" class="mt-3 w-full py-2.5 border border-gray-300 rounded-xl text-sm font-medium disabled:opacity-50">Upload Logo</button>
+        </div>
+        <div class="bg-white rounded-2xl border border-gray-200 p-5">
+          <h3 class="font-semibold text-sm">Pro Features</h3>
+          <ul class="mt-2 text-[13px] space-y-1.5 text-gray-700">
+            <li>✓ 200 players (vs 25)</li>
+            <li>✓ Advanced analytics</li>
+            <li>✓ Priority support</li>
+            <li>✓ No ads</li>
+          </ul>
+          <button id="upgradeSide" class="mt-3 w-full py-2 bg-[#0B1120] text-white rounded-lg text-sm">Upgrade – $9/mo</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLAY -->
+  <section id="view-play" class="hidden">
+    <div class="max-w-3xl mx-auto">
+      <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <div class="flex justify-between items-center mb-5">
+          <div class="text-sm font-medium">Question <span id="qNum">1</span>/<span id="qTotal">10</span></div>
+          <div class="flex gap-1.5">
+            <button id="netBtn" class="px-3 py-1.5 text-xs rounded-lg bg-gray-900 text-white font-medium">Network+ N10-009</button>
+            <button id="secBtn" class="px-3 py-1.5 text-xs rounded-lg border border-gray-300 flex items-center gap-1.5 font-medium">Security+ <span id="secBadge" class="text-[10px] px-1 py-0.5 bg-violet-100 text-violet-700 rounded">LOCKED</span></button>
+          </div>
+        </div>
+        <div id="qText" class="text-[18px] font-medium leading-snug min-h-[56px]"></div>
+        <div id="qOpts" class="mt-5 grid gap-2.5"></div>
+        <div class="mt-6 flex justify-between items-center">
+          <div class="text-[12px] text-gray-500" id="qTopic">Domain 1.0 Networking Concepts</div>
+          <button id="nextBtn" class="px-4 py-2 bg-violet-600 text-white rounded-lg text-sm font-medium hidden hover:bg-violet-700">Next →</button>
+        </div>
+      <div class="text-center mt-4 text-[11px] text-gray-500">Ultra-fast • No tracking • Works offline after load</div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="view-results" class="hidden">
+    <div class="max-w-xl mx-auto text-center">
+      <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
+        <div class="w-24 h-24 mx-auto rounded-full bg-violet-50 border-2 border-violet-200 grid place-items-center">
+          <div id="scoreCircle" class="text-3xl font-bold text-violet-700">0%</div>
+        </div>
+        <h2 class="mt-5 text-2xl font-bold">Practice Complete</h2>
+        <p class="text-gray-600 mt-1 text-[15px]" id="scoreText">0/0 correct</p>
+        <p class="text-xs text-gray-500 mt-1" id="passText"></p>
+        <div class="mt-7 max-w-sm mx-auto text-left">
+          <label class="text-[12px] font-medium text-gray-700">Name for certificate</label>
+          <input id="certName" class="mt-1 w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-[14px]" placeholder="Your full name">
+        </div>
+        <button id="dlCert" class="mt-4 px-6 py-3 bg-[#0B1120] text-white rounded-xl font-medium hover:bg-black w-full sm:w-auto">Download Certificate (PDF)</button>
+        <p class="text-[11px] text-gray-500 mt-2">Includes verification code • N10-009 aligned • Shareable</p>
+        <div class="mt-8 pt-6 border-t border-gray-200">
+          <p class="text-sm font-medium">Continue studying</p>
+          <div class="mt-3 flex flex-wrap gap-2 justify-center">
+            <button onclick="trackAff('dion')" class="text-xs px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50">Jason Dion Course</button>
+            <button onclick="trackAff('messer')" class="text-xs px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50">Professor Messer</button>
+            <button onclick="trackAff('certmaster')" class="text-xs px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50">CertMaster</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="view-pricing" class="hidden">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-[32px] font-bold text-center tracking-tight">Upgrade when you're ready</h2>
+      <p class="text-center text-gray-600 mt-2">Free for 25 players. Pro unlocks the full classroom.</p>
+      <div class="mt-10 grid md:grid-cols-3 gap-5">
+        <div class="bg-white border border-gray-200 rounded-[20px] p-6">
+          <h3 class="font-semibold">Free</h3>
+          <div class="text-[32px] font-bold mt-2">$0</div>
+          <div class="text-xs text-gray-500">Forever</div>
+          <ul class="mt-5 text-[14px] space-y-2.5">
+            <li class="flex gap-2"><span class="text-emerald-600">✓</span> Up to 25 players</li>
+            <li class="flex gap-2"><span class="text-emerald-600">✓</span> Network+ N10-009 bank</li>
+            <li class="flex gap-2"><span class="text-emerald-600">✓</span> PDF certificates</li>
+            <li class="flex gap-2 text-gray-400"><span>✗</span> Analytics</li>
+            <li class="flex gap-2 text-gray-400"><span>✗</span> Custom branding</li>
+          </ul>
+          <button data-nav="play" class="mt-6 w-full py-2.5 border border-gray-300 rounded-xl text-sm font-medium">Start Free</button>
+        </div>
+        <div class="bg-[#0B1120] text-white border-2 border-violet-500 rounded-[20px] p-6 relative shadow-xl scale-[1.02]">
+          <div class="absolute -top-3 right-5 text-[10px] px-2.5 py-1 bg-violet-500 rounded-full font-medium tracking-wide">MOST POPULAR</div>
+          <h3 class="font-semibold">Pro</h3>
+          <div class="text-[32px] font-bold mt-2">$9<span class="text-base font-normal opacity-70">/mo</span></div>
+          <div class="text-xs opacity-70">Per instructor</div>
+          <ul class="mt-5 text-[14px] space-y-2.5 opacity-95">
+            <li class="flex gap-2"><span>✓</span> 200 players per game</li>
+            <li class="flex gap-2"><span>✓</span> Custom branding & logo</li>
+            <li class="flex gap-2"><span>✓</span> Advanced analytics</li>
+            <li class="flex gap-2"><span>✓</span> Security+ bank (or via referrals)</li>
+            <li class="flex gap-2"><span>✓</span> Priority support • No ads</li>
+          </ul>
+          <button id="upgradeBtn" class="mt-6 w-full py-3 bg-white text-black rounded-xl font-semibold hover:bg-gray-100">Upgrade to Pro</button>
+          <div class="text-[11px] text-center mt-2 opacity-70">Stripe test mode • Cancel anytime</div>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-[20px] p-6">
+          <h3 class="font-semibold">School / Enterprise</h3>
+          <div class="text-[32px] font-bold mt-2">Custom</div>
+          <div class="text-xs text-gray-500">Unlimited students</div>
+          <ul class="mt-5 text-[14px] space-y-2.5 text-gray-700">
+            <li class="flex gap-2"><span class="text-emerald-600">✓</span> SAML SSO (Google, Azure, ClassLink)</li>
+            <li class="flex gap-2"><span class="text-emerald-600">✓</span> Roster sync & LMS</li>
+            <li class="flex gap-2"><span class="text-emerald-600">✓</span> Dedicated training</li>
+            <li class="flex gap-2"><span class="text-emerald-600">✓</span> Volume discounts</li>
+          </ul>
+          <button id="schoolContact" class="mt-6 w-full py-2.5 border border-gray-300 rounded-xl text-sm font-medium">Contact Sales</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESOURCES -->
+  <section id="view-resources" class="hidden">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex items-end justify-between flex-wrap gap-3">
+        <div>
+          <h2 class="text-2xl font-bold">Study Resources</h2>
+          <p class="text-sm text-gray-600 mt-1">Curated N10-009 materials we recommend. We may earn a commission — helps keep the free tier alive.</p>
+        </div>
+        <div class="text-[11px] text-gray-500">Affiliate disclosure</div>
+      </div>
+      <div class="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white border border-gray-200 rounded-2xl p-4 hover:shadow-md transition cursor-pointer" onclick="trackAff('dion')">
+          <div class="text-[11px] font-medium text-violet-600">UDEMY • BESTSELLER</div>
+          <h3 class="font-semibold mt-1.5 leading-snug">Jason Dion – Network+ N10-009</h3>
+          <p class="text-xs text-gray-600 mt-1.5">6 practice tests + full course. Our top pick.</p>
+          <div class="mt-3 text-xs font-medium underline underline-offset-2">Get course →</div>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-2xl p-4 hover:shadow-md transition cursor-pointer" onclick="trackAff('messer')">
+          <div class="text-[11px] font-medium text-red-600">YOUTUBE • FREE</div>
+          <h3 class="font-semibold mt-1.5 leading-snug">Professor Messer Videos</h3>
+          <p class="text-xs text-gray-600 mt-1.5">Free, complete N10-009 video series.</p>
+          <div class="mt-3 text-xs font-medium underline underline-offset-2">Watch free →</div>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-2xl p-4 hover:shadow-md transition cursor-pointer" onclick="trackAff('certmaster')">
+          <div class="text-[11px] font-medium text-[#C41E3A]">COMPTIA OFFICIAL</div>
+          <h3 class="font-semibold mt-1.5 leading-snug">CertMaster Learn + Labs</h3>
+          <p class="text-xs text-gray-600 mt-1.5">Official interactive training.</p>
+          <div class="mt-3 text-xs font-medium underline underline-offset-2">Explore →</div>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-2xl p-4 hover:shadow-md transition cursor-pointer" onclick="trackAff('book')">
+          <div class="text-[11px] font-medium text-amber-600">AMAZON</div>
+          <h3 class="font-semibold mt-1.5 leading-snug">Practice Test Book</h3>
+          <p class="text-xs text-gray-600 mt-1.5">1,000+ questions, Sybex guide.</p>
+          <div class="mt-3 text-xs font-medium underline underline-offset-2">View on Amazon →</div>
+        </div>
+      </div>
+      <div class="mt-8 bg-amber-50 border border-amber-200 rounded-xl p-4 text-[12px] text-amber-900">Pro tip: Combine Messer (free) + Dion practice tests + this platform for live review. Most students pass in 4–6 weeks.</div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section id="view-dashboard" class="hidden">
+    <div class="max-w-5xl mx-auto grid lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 space-y-5">
+        <div class="bg-white border border-gray-200 rounded-2xl p-6">
+          <h3 class="font-semibold">Account</h3>
+          <div class="mt-3 grid sm:grid-cols-2 gap-3 text-[14px]">
+            <div><span class="text-gray-500">Name:</span> <span id="dashName" class="font-medium"></span></div>
+            <div><span class="text-gray-500">Plan:</span> <span id="dashPlan" class="font-medium"></span></div>
+            <div><span class="text-gray-500">Referral code:</span> <span id="dashCode" class="font-mono text-xs"></span></div>
+            <div><span class="text-gray-500">Member since:</span> <span class="font-medium">Today</span></div>
+          </div>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-2xl p-6">
+          <div class="flex items-center justify-between">
+            <h3 class="font-semibold">Referral Program</h3>
+            <span class="text-[10px] px-2 py-0.5 bg-amber-100 text-amber-800 rounded-full font-medium">UNLOCK SECURITY+</span>
+          </div>
+          <p class="text-[14px] text-gray-600 mt-1.5">Invite 3 friends to NetPlus Pro. When they join, you unlock the Security+ SY0-701 question bank forever — no credit card needed.</p>
+          <div class="mt-4">
+            <div class="flex gap-2">
+              <input id="refLink" readonly class="flex-1 border border-gray-300 rounded-xl px-3 py-2.5 text-xs font-mono bg-gray-50">
+              <button id="copyRef" class="px-4 py-2.5 border border-gray-300 rounded-xl text-xs font-medium hover:bg-gray-50">Copy</button>
+            </div>
+            <div class="mt-4">
+              <div class="flex justify-between text-[12px] mb-1.5"><span class="font-medium">Progress to unlock</span><span id="refProgress" class="font-mono">0/3</span></div>
+              <div class="h-2.5 bg-gray-200 rounded-full overflow-hidden"><div id="refBar" class="h-2.5 bg-emerald-500 rounded-full transition-all" style="width:0%"></div></div>
+            </div>
+            <div class="mt-3 flex items-center justify-between">
+              <div class="text-[12px]">Status: <span id="secUnlock" class="font-medium text-gray-700">Locked</span></div>
+              <button id="demoRef" class="text-[11px] underline text-gray-500 hover:text-gray-700">+ Add test referral (demo)</button>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-2xl p-6" id="analyticsCard">
+          <div class="flex items-center gap-2"><h3 class="font-semibold">Analytics</h3><span class="text-[10px] px-1.5 py-0.5 rounded bg-violet-100 text-violet-700 font-medium">PRO</span></div>
+          <div id="analyticsContent" class="mt-3 text-[14px] text-gray-600">Upgrade to Pro to unlock affiliate click tracking, player engagement, certificate downloads, and conversion funnels.</div>
+        </div>
+      </div>
+      <div class="space-y-5">
+        <div class="bg-white border border-gray-200 rounded-2xl p-5">
+          <h3 class="font-semibold text-[15px]">Quick Actions</h3>
+          <button data-nav="host" class="mt-3 w-full py-2.5 bg-gray-900 text-white rounded-xl text-sm font-medium hover:bg-black">Host New Game</button>
+          <button data-nav="pricing" class="mt-2 w-full py-2.5 border border-gray-300 rounded-xl text-sm font-medium hover:bg-gray-50">View Pricing</button>
+          <button id="resetAll" class="mt-2 w-full py-2 text-[11px] text-gray-500 hover:text-red-600">Reset demo data</button>
+        </div>
+        <div class="bg-violet-50 border border-violet-200 rounded-2xl p-5">
+          <div class="text-xs font-medium text-violet-800">Pro tip</div>
+          <p class="text-[13px] text-violet-900 mt-1 leading-snug">Schools get SSO, roster sync, and unlimited seats. Click "School Login" to try the demo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCHOOL -->
+  <section id="view-school" class="hidden">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <h2 class="text-2xl font-bold">School Dashboard</h2>
+        <div class="flex items-center gap-2">
+          <span class="text-xs px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full font-medium">SSO Active</span>
+          <span class="text-xs px-2.5 py-1 bg-gray-900 text-white rounded-full font-medium" id="schoolName">Demo High School</span>
+        </div>
+      </div>
+      <div class="mt-6 bg-white border border-gray-200 rounded-2xl p-6">
+        <div class="flex justify-between items-center flex-wrap gap-3">
+          <h3 class="font-semibold">Roster Management</h3>
+          <div class="flex gap-2">
+            <button id="importCsv" class="text-xs px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50">Import CSV</button>
+            <button id="addStudent" class="text-xs px-3.5 py-1.5 bg-gray-900 text-white rounded-lg hover:bg-black">+ Add Student</button>
+          </div>
+        </div>
+        <div class="mt-4 overflow-x-auto">
+          <table class="w-full text-[13px]">
+            <thead class="text-left text-gray-500 border-b"><tr><th class="py-2.5 font-medium">Name</th><th class="font-medium">Email</th><th class="font-medium">Last Score</th><th></th></tr></thead>
+            <tbody id="rosterBody" class="divide-y"></tbody>
+          </table>
+        </div>
+        <div class="mt-4 text-[11px] text-gray-500">This is a mock SSO implementation. In production, we sync via Google Workspace, Azure AD, or ClassLink OneRoster.</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-gray-200 mt-16 py-8 text-[12px] text-gray-500">
+  <div class="max-w-6xl mx-auto px-4">
+    <p class="leading-relaxed">CompTIA®, Network+®, and N10-009™ are registered trademarks of the Computing Technology Industry Association, Inc. NetPlus Pro is an independent practice platform and is not affiliated with, endorsed by, or sponsored by CompTIA. "CompTIA Authorized Practice Partner — Application Pending" reflects our submitted partnership application status.</p>
+    <p class="mt-2">Official exam objectives: <a href="https://www.comptia.org/certifications/network" target="_blank" class="underline underline-offset-2 hover:text-gray-700">comptia.org/certifications/network</a> • Questions aligned to N10-009 domains.</p>
+  </div>
+</footer>
+
+<!-- MODALS -->
+<div id="ssoModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 grid place-items-center p-4">
+  <div class="bg-white rounded-[20px] p-6 max-w-sm w-full shadow-xl">
+    <h3 class="text-lg font-semibold">School / Enterprise SSO</h3>
+    <p class="text-sm text-gray-600 mt-1">Choose your provider. Demo mode will activate a school license instantly.</p>
+    <div class="mt-5 space-y-2.5">
+      <button data-sso="google" class="w-full py-3 border border-gray-300 rounded-xl text-sm font-medium hover:bg-gray-50 flex items-center justify-center gap-2"><img src="https://www.google.com/favicon.ico" class="w-4 h-4">Continue with Google Workspace</button>
+      <button data-sso="azure" class="w-full py-3 border border-gray-300 rounded-xl text-sm font-medium hover:bg-gray-50 flex items-center justify-center gap-2"><svg width="16" height="16" viewBox="0 0 23 23"><path fill="#f3f3f3" d="M0 0h23v23H0z"/><path fill="#f35325" d="M1 1h10v10H1z"/><path fill="#81bc06" d="M12 1h10v10H12z"/><path fill="#05a6f0" d="M1 12h10v10H1z"/><path fill="#ffba08" d="M12 12h10v10H12z"/></svg> Microsoft Azure AD</button>
+      <button data-sso="classlink" class="w-full py-3 border border-gray-300 rounded-xl text-sm font-medium hover:bg-gray-50">ClassLink</button>
+    </div>
+    <button onclick="document.getElementById('ssoModal').classList.add('hidden')" class="mt-4 w-full text-xs text-gray-500 hover:text-gray-700">Cancel</button>
+  </div>
+</div>
+
+<div id="checkoutModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 grid place-items-center p-4">
+  <div class="bg-white rounded-[20px] p-6 max-w-sm w-full shadow-2xl">
+    <h3 class="text-xl font-bold">Upgrade to Pro</h3>
+    <p class="text-sm text-gray-600 mt-1">$9 per month • 200 players • Cancel anytime</p>
+    <div class="mt-4 p-3 border border-gray-200 rounded-xl bg-gray-50">
+      <div class="text-[11px] text-gray-500 mb-1">POWERED BY STRIPE (TEST MODE)</div>
+      <div class="font-mono text-xs">4242 4242 4242 4242 • 12/34 • 123</div>
+    </div>
+    <button id="payBtn" class="mt-5 w-full py-3 bg-violet-600 text-white rounded-xl font-semibold hover:bg-violet-700">Pay $9.00</button>
+    <button onclick="document.getElementById('checkoutModal').classList.add('hidden')" class="mt-2 w-full py-2 text-sm text-gray-600 hover:text-gray-900">Cancel</button>
+    <p class="text-[10px] text-gray-500 text-center mt-3">Demo: No real charge. Sets isPro=true in localStorage.</p>
+  </div>
+</div>
+
+<div id="limitModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 grid place-items-center p-4">
+  <div class="bg-white rounded-[20px] p-6 max-w-md w-full shadow-2xl text-center">
+    <div class="w-12 h-12 mx-auto bg-amber-100 rounded-full grid place-items-center text-amber-600">⚡</div>
+    <h3 class="text-xl font-bold mt-3">Free tier limit reached</h3>
+    <p class="text-sm text-gray-600 mt-2">You've hit 25 players. Upgrade to Pro for 200 players, custom branding, analytics, and priority support.</p>
+    <div class="mt-5 flex gap-2">
+      <button onclick="document.getElementById('limitModal').classList.add('hidden')" class="flex-1 py-2.5 border border-gray-300 rounded-xl text-sm">Maybe later</button>
+      <button id="limitUpgrade" class="flex-1 py-2.5 bg-[#0B1120] text-white rounded-xl text-sm font-medium">Upgrade – $9/mo</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const $$=s=>document.querySelectorAll(s);
+const store={
+  get k(){return {
+    pro:'netplus_isPro',
+    school:'netplus_isSchool',
+    name:'netplus_name',
+    code:'netplus_code',
+    players:'netplus_players',
+    clicks:'netplus_clicks',
+    roster:'netplus_roster'
+  }},
+  isPro:localStorage.getItem('netplus_isPro')==='true',
+  isSchool:localStorage.getItem('netplus_isSchool')==='true',
+  name:localStorage.getItem('netplus_name')||'',
+  code:localStorage.getItem('netplus_code')||'',
+  playerCount:parseInt(localStorage.getItem('netplus_players')||'0'),
+  referrals:0
+};
+const stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
+
+function init(){
+  if(!store.name){store.name='User'+Math.floor(100+Math.random()*900);localStorage.setItem(store.k.name,store.name)}
+  if(!store.code){store.code=store.name.slice(0,3).toUpperCase()+Math.floor(1000+Math.random()*9000);localStorage.setItem(store.k.code,store.code)}
+  const params=new URLSearchParams(location.search);const ref=params.get('ref');
+  if(ref&&ref!==store.code){const key='netplus_ref_'+ref;localStorage.setItem(key,(parseInt(localStorage.getItem(key)||'0')+1));localStorage.setItem('netplus_referredBy',ref)}
+  store.referrals=parseInt(localStorage.getItem('netplus_ref_'+store.code)||'0');
+  updateBadges();updateHostLimit();updatePlayers();updateDashboard();showView('landing');
+}
+function showView(v){$$('section[id^="view-"]').forEach(s=>s.classList.add('hidden'));$('#view-'+v).classList.remove('hidden');window.scrollTo({top:0,behavior:'instant'});if(v==='dashboard')updateDashboard();if(v==='school')loadRoster();if(v==='play'&&!window.qInit){startQuiz('net')}}
+$$('[data-nav]').forEach(b=>b.onclick=()=>showView(b.dataset.nav));
+$('#mobileMenu').onclick=()=>$('#mobileNav').classList.toggle('hidden');
+$$('#mobileNav button').forEach(b=>b.onclick=()=>{$('#mobileNav').classList.add('hidden');showView(b.dataset.nav)});
+
+function updateBadges(){
+  if(store.isPro){$('#planBadge').classList.remove('hidden');$('#upgradeTop').classList.add('hidden')}
+  if(store.isSchool){$('#schoolBadge').classList.remove('hidden')}
+}
+$('#upgradeTop').onclick=doUpgrade;$('#upgradeBtn').onclick=doUpgrade;$('#upgradeSide').onclick=doUpgrade;$('#limitUpgrade').onclick=doUpgrade;
+function doUpgrade(){$('#checkoutModal').classList.remove('hidden')}
+$('#payBtn').onclick=()=>{ $('#payBtn').disabled=true;$('#payBtn').textContent='Processing…'; setTimeout(()=>{localStorage.setItem(store.k.pro,'true');store.isPro=true;$('#checkoutModal').classList.add('hidden');updateBadges();updateHostLimit();updateDashboard();alert('Pro activated! (demo)');location.reload()},1100)};
+
+$('#schoolLoginBtn').onclick=()=>$('#ssoModal').classList.remove('hidden');$$('[data-sso]').forEach(b=>b.onclick=()=>{localStorage.setItem(store.k.school,'true');store.isSchool=true;$('#ssoModal').classList.add('hidden');updateBadges();updateHostLimit();showView('school')});
+$('#schoolContact').onclick=()=>{alert('Sales demo: Click SSO above to activate school license instantly.')};
+
+function updateHostLimit(){const limit=store.isPro||store.isSchool?200:25;$('#plimit').textContent=limit;$('#brandBtn').disabled=!(store.isPro||store.isSchool)}
+function updatePlayers(){const limit=parseInt($('#plimit').textContent);$('#pcount').textContent=store.playerCount;$('#pbar').style.width=Math.min(100,store.playerCount/limit*100)+'%';if(!store.isPro&&!store.isSchool&&store.playerCount>=20)$('#limitWarning').classList.remove('hidden');else $('#limitWarning').classList.add('hidden')}
+$('#addFakePlayer').onclick=()=>{const limit=parseInt($('#plimit').textContent);if(store.playerCount<limit){store.playerCount++;localStorage.setItem(store.k.players,store.playerCount);updatePlayers();if(store.playerCount>=limit&&!store.isPro&&!store.isSchool)showUpgrade()}else showUpgrade()};
+$('#resetPlayers').onclick=()=>{store.playerCount=0;localStorage.setItem(store.k.players,'0');updatePlayers()};
+$('#startGame').onclick=()=>showView('play');
+$('#brandBtn').onclick=()=>{if(store.isPro||store.isSchool)alert('Logo uploaded (demo)');else showUpgrade()};
+function showUpgrade(){$('#limitModal').classList.remove('hidden')}
+
+// Questions
+const netQuestions=[
+{q:"Which port does DNS primarily use for queries?",o:["53/UDP","80/TCP","443/TCP","22/TCP"],a:0,d:"1.0 Networking Concepts"},
+{q:"At which OSI layer does a router operate?",o:["Layer 1 Physical","Layer 2 Data Link","Layer 3 Network","Layer 7 Application"],a:2,d:"1.1 OSI Model"},
+{q:"A /26 subnet provides how many usable host addresses?",o:["62","64","30","126"],a:0,d:"1.4 Subnetting"},
+{q:"Which Wi-Fi standard introduced 6 GHz operation?",o:["Wi-Fi 5 (802.11ac)","Wi-Fi 6 (802.11ax)","Wi-Fi 6E","Wi-Fi 4"],a:2,d:"2.0 Wireless"},
+{q:"What is the primary purpose of STP?",o:["Encrypt traffic","Prevent switching loops","Assign IP addresses","Load balance"],a:1,d:"2.3 Switching"},
+{q:"DHCP DORA process order is:",o:["Discover, Offer, Request, Ack","Request, Discover, Offer, Ack","Offer, Discover, Ack, Request","Discover, Request, Offer, Ack"],a:0,d:"1.6 DHCP"},
+{q:"Which cable type supports 10GBASE-T up to 100m?",o:["Cat5e","Cat6","Cat6a","Cat3"],a:2,d:"1.3 Cabling"},
+{q:"IPv6 link-local address prefix is:",o:["fc00::/7","fe80::/10","2001::/32","::1/128"],a:1,d:"1.5 IPv6"},
+{q:"Default native VLAN on Cisco switches?",o:["VLAN 0","VLAN 1","VLAN 100","VLAN 4094"],a:1,d:"2.4 VLANs"},
+{q:"Which Linux command shows the routing table?",o:["ip route","ifconfig","nslookup","traceroute"],a:0,d:"5.0 Network Troubleshooting"}
+];
+const secQuestions=[
+{q:"The CIA triad does NOT include:",o:["Confidentiality","Integrity","Availability","Authentication"],a:3,d:"Security+"},
+{q:"Port 22 is used by:",o:["Telnet","SSH","RDP","FTP"],a:1,d:"Security+"},
+{q:"Which is a symmetric encryption algorithm?",o:["RSA","AES","ECC","DSA"],a:1,d:"Security+"},
+{q:"MFA requires:",o:["Two passwords","Two or more different factor types","Username + password only","Biometrics twice"],a:1,d:"Security+"},
+{q:"A honeypot is used to:",o:["Block spam","Attract and detect attackers","Encrypt data","Cache DNS"],a:1,d:"Security+"}
+];
+let questions=[],qIndex=0,score=0,lastResults={};
+function startQuiz(type){window.qInit=true;questions=type==='sec'?secQuestions:netQuestions;qIndex=0;score=0;$('#qTotal').textContent=questions.length;$('#netBtn').classList.toggle('bg-gray-900',type==='net');$('#netBtn').classList.toggle('text-white',type==='net');$('#secBtn').classList.toggle('bg-gray-900',type==='sec');$('#secBtn').classList.toggle('text-white',type==='sec');renderQ()}
+$('#netBtn').onclick=()=>startQuiz('net');
+$('#secBtn').onclick=()=>{if(store.referrals>=3||store.isPro||store.isSchool){startQuiz('sec')}else{showView('dashboard');alert('Unlock Security+ by inviting 3 friends or upgrading to Pro')}}
+function renderQ(){const q=questions[qIndex];$('#qNum').textContent=qIndex+1;$('#qText').textContent=q.q;$('#qTopic').textContent=q.d||'';$('#qOpts').innerHTML=q.o.map((opt,i)=>`<button data-opt="${i}" class="w-full text-left px-4 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition text-[14px]"><span class="font-mono text-xs mr-2 text-gray-500">${String.fromCharCode(65+i)}</span>${opt}</button>`).join('');$('#nextBtn').classList.add('hidden');$$('#qOpts button').forEach(b=>b.onclick=()=>selectOpt(parseInt(b.dataset.opt),q.a))}
+function selectOpt(chosen,correct){$$('#qOpts button').forEach((b,i)=>{b.disabled=true;b.classList.remove('hover:bg-gray-50');if(i===correct)b.classList.add('bg-emerald-50','border-emerald-500','text-emerald-900');else if(i===chosen)b.classList.add('bg-red-50','border-red-400','text-red-900');});if(chosen===correct)score++;$('#nextBtn').classList.remove('hidden');$('#nextBtn').textContent=qIndex<questions.length-1?'Next →':'See Results →'}
+$('#nextBtn').onclick=()=>{qIndex++;if(qIndex<questions.length)renderQ();else showResults()}
+function showResults(){lastResults={score,total:questions.length,percent:Math.round(score/questions.length*100)};$('#scoreCircle').textContent=lastResults.percent+'%';$('#scoreText').textContent=`${score}/${questions.length} correct`;$('#passText').textContent=lastResults.percent>=80?'Status: PASS (CompTIA passing ~720/900)' : 'Status: Keep practicing – aim for 85%+';$('#certName').value=store.name;showView('results')}
+
+// Certificate
+$('#dlCert').onclick=async()=>{const name=$('#certName').value.trim()||store.name;if(!window.jspdf){$('#dlCert').textContent='Loading PDF…';await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');}const {jsPDF}=window.jspdf;const doc=new jsPDF({orientation:'landscape',unit:'pt',format:'a4'});const date=new Date().toLocaleDateString();const code='NET-'+Math.random().toString(36).substring(2,8).toUpperCase();doc.setFillColor(11,17,32);doc.rect(0,0,842,30,'F');doc.setDrawColor(11,17,32);doc.setLineWidth(3);doc.rect(20,20,802,555);doc.setFont('helvetica','bold');doc.setFontSize(30);doc.setTextColor(11,17,32);doc.text('Certificate of Completion',421,140,{align:'center'});doc.setFont('helvetica','normal');doc.setFontSize(14);doc.setTextColor(80);doc.text('CompTIA Network+ N10-009 Practice Exam',421,170,{align:'center'});doc.setFontSize(16);doc.text('This certifies that',421,230,{align:'center'});doc.setFont('helvetica','bold');doc.setFontSize(36);doc.setTextColor(79,70,229);doc.text(name,421,280,{align:'center'});doc.setFont('helvetica','normal');doc.setFontSize(14);doc.setTextColor(30);doc.text(`has successfully completed the practice assessment with a score of ${lastResults.score}/${lastResults.total} (${lastResults.percent}%)`,421,320,{align:'center'});doc.text(`Date: ${date}`,421,345,{align:'center'});doc.setFontSize(11);doc.setTextColor(100);doc.text(`Verification Code: ${code}`,421,390,{align:'center'});doc.text('Verify at netplus.pro/verify',421,407,{align:'center'});doc.setDrawColor(200);doc.rect(670,440,100,100);doc.setFontSize(9);doc.text('QR VERIFY',720,490,{align:'center'});doc.setFontSize(10);doc.setTextColor(120);doc.text('NetPlus Pro — CompTIA Authorized Practice Partner (Application Pending)',421,530,{align:'center'});doc.save(`NetPlus-Certificate-${name.replace(/\s+/g,'_')}.pdf`);$('#dlCert').textContent='Download Certificate (PDF)';const dl=JSON.parse(localStorage.getItem('netplus_downloads')||'0')+1;localStorage.setItem('netplus_downloads',dl)}
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+
+// Resources affiliate
+function trackAff(id){const map={dion:'https://www.udemy.com/course/comptia-network-cert-n10-009/?ref=netplus',messer:'https://www.youtube.com/c/professormesser',certmaster:'https://www.comptia.org/training/certmaster',book:'https://www.amazon.com/dp/1119810803?tag=netpluspro-20'};const clicks=JSON.parse(localStorage.getItem(store.k.clicks)||'{}');clicks[id]=(clicks[id]||0)+1;localStorage.setItem(store.k.clicks,JSON.stringify(clicks));window.open(map[id],'_blank');updateDashboard()}window.trackAff=trackAff;
+
+// Dashboard
+function updateDashboard(){`$('#dashName')&&($('#dashName').textContent=store.name);$('#dashPlan')&&($('#dashPlan').textContent=store.isSchool?'School (SSO)':store.isPro?'Pro':'Free');$('#dashCode')&&($('#dashCode').textContent=store.code);$('#refCode')&&($('#refCode').textContent=store.code);const link=location.origin+location.pathname+'?ref='+store.code;$('#refLink')&&($('#refLink').value=link);$('#refProgress')&&($('#refProgress').textContent=store.referrals+'/3');$('#refBar')&&($('#refBar').style.width=Math.min(100,store.referrals/3*100)+'%');const unlocked=store.referrals>=3||store.isPro||store.isSchool;$('#secUnlock')&&($('#secUnlock').textContent=unlocked?'Unlocked ✓':'Locked');$('#secUnlock')&&($('#secUnlock').className=unlocked?'font-medium text-emerald-700':'font-medium text-gray-700');$('#secBadge')&&(unlocked?$('#secBadge').classList.add('hidden'):$('#secBadge').classList.remove('hidden'));if(store.isPro){const clicks=JSON.parse(localStorage.getItem(store.k.clicks)||'{}');const dl=localStorage.getItem('netplus_downloads')||'0';$('#analyticsContent').innerHTML=`<div class="grid grid-cols-2 sm:grid-cols-4 gap-3"><div class="p-3 bg-gray-50 rounded-xl border"><div class="text-[11px] text-gray-500">Udemy Clicks</div><div class="text-xl font-semibold">${clicks.dion||0}</div></div><div class="p-3 bg-gray-50 rounded-xl border"><div class="text-[11px] text-gray-500">Messer</div><div class="text-xl font-semibold">${clicks.messer||0}</div></div><div class="p-3 bg-gray-50 rounded-xl border"><div class="text-[11px] text-gray-500">CertMaster</div><div class="text-xl font-semibold">${clicks.certmaster||0}</div></div><div class="p-3 bg-gray-50 rounded-xl border"><div class="text-[11px] text-gray-500">Certificates</div><div class="text-xl font-semibold">${dl}</div></div></div>`}}}`;`// fix previous line properly
+function updateDashboard(){
+  if($('#dashName')) $('#dashName').textContent=store.name;
+  if($('#dashPlan')) $('#dashPlan').textContent=store.isSchool?'School (SSO)':store.isPro?'Pro':'Free';
+  if($('#dashCode')) $('#dashCode').textContent=store.code;
+  if($('#refCode')) $('#refCode').textContent=store.code;
+  const link=location.origin+location.pathname+'?ref='+store.code;
+  if($('#refLink')) $('#refLink').value=link;
+  if($('#refProgress')) $('#refProgress').textContent=store.referrals+'/3';
+  if($('#refBar')) $('#refBar').style.width=Math.min(100,store.referrals/3*100)+'%';
+  const unlocked=store.referrals>=3||store.isPro||store.isSchool;
+  if($('#secUnlock')){$('#secUnlock').textContent=unlocked?'Unlocked ✓':'Locked';$('#secUnlock').className=unlocked?'font-medium text-emerald-700':'font-medium text-gray-700'}
+  if($('#secBadge')){unlocked?$('#secBadge').classList.add('hidden'):$('#secBadge').classList.remove('hidden')}
+  if(store.isPro){const clicks=JSON.parse(localStorage.getItem(store.k.clicks)||'{}');const dl=localStorage.getItem('netplus_downloads')||'0';$('#analyticsContent').innerHTML=`<div class="grid grid-cols-2 sm:grid-cols-4 gap-3"><div class="p-3 bg-gray-50 rounded-xl border"><div class="text-[11px] text-gray-500">Udemy Clicks</div><div class="text-xl font-semibold">${clicks.dion||0}</div></div><div class="p-3 bg-gray-50 rounded-xl border"><div class="text-[11px] text-gray-500">Messer</div><div class="text-xl font-semibold">${clicks.messer||0}</div></div><div class="p-3 bg-gray-50 rounded-xl border"><div class="text-[11px] text-gray-500">CertMaster</div><div class="text-xl font-semibold">${clicks.certmaster||0}</div></div><div class="p-3 bg-gray-50 rounded-xl border"><div class="text-[11px] text-gray-500">Certificates</div><div class="text-xl font-semibold">${dl}</div></div></div>`}
+}
+$('#copyRef').onclick=()=>{navigator.clipboard.writeText($('#refLink').value);$('#copyRef').textContent='Copied!';setTimeout(()=>$('#copyRef').textContent='Copy',1400)};
+$('#demoRef').onclick=()=>{const key='netplus_ref_'+store.code;const c=parseInt(localStorage.getItem(key)||'0')+1;localStorage.setItem(key,c);store.referrals=c;updateDashboard();alert('Demo referral added. Share your link to get real referrals.')};
+$('#resetAll').onclick=()=>{if(confirm('Reset all demo data?')){localStorage.clear();location.reload()}};
+
+// Roster
+function loadRoster(){const roster=JSON.parse(localStorage.getItem(store.k.roster)||'[]');$('#rosterBody').innerHTML=roster.length?roster.map((s,i)=>`<tr><td class="py-2.5">${s.name}</td><td class="text-gray-600">${s.email}</td><td>${s.score||'—'}</td><td class="text-right"><button onclick="delStudent(${i})" class="text-[11px] text-red-600 hover:underline">Remove</button></td></tr>`).join(''):`<tr><td colspan="4" class="py-8 text-center text-gray-500 text-xs">No students yet. Import CSV or add manually.</td></tr>`}
+window.delStudent=i=>{const r=JSON.parse(localStorage.getItem(store.k.roster)||'[]');r.splice(i,1);localStorage.setItem(store.k.roster,JSON.stringify(r));loadRoster()};
+$('#addStudent').onclick=()=>{const name=prompt('Student full name:');if(!name)return;const email=prompt('School email:')||`${name.toLowerCase().replace(/\s+/g,'.')}@school.edu`;const r=JSON.parse(localStorage.getItem(store.k.roster)||'[]');r.push({name,email,score:Math.floor(72+Math.random()*26)+'%'});localStorage.setItem(store.k.roster,JSON.stringify(r));loadRoster()};
+$('#importCsv').onclick=()=>{const demo=Array.from({length:24},(_,i)=>({name:`Student ${i+1}`,email:`student${i+1}@demo.edu`,score:'—'}));localStorage.setItem(store.k.roster,JSON.stringify(demo));loadRoster();alert('Imported 24 students (demo)')};
+
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
